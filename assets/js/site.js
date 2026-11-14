@@ -47,6 +47,25 @@ document.querySelectorAll(".chart").forEach((chart) => {
   });
 });
 
+// RoboBrain showcase: switch between the two recorded runs; when one ends, play the other.
+document.querySelectorAll("[data-clips]").forEach((root) => {
+  const video = root.querySelector("video");
+  const tabs = [...root.querySelectorAll("[data-clip]")];
+  const captions = root.querySelectorAll("[data-caption]");
+  const select = (tab, play) => {
+    tabs.forEach((t) => t.setAttribute("aria-pressed", String(t === tab)));
+    captions.forEach((c) => { c.hidden = c.dataset.caption !== tab.dataset.clip; });
+    video.src = tab.dataset.src; video.poster = tab.dataset.poster;
+    video.setAttribute("aria-label", tab.dataset.label);
+    if (play) video.play().catch(() => {});
+  };
+  tabs.forEach((t) => t.addEventListener("click", () => select(t, true)));
+  video.addEventListener("ended", () => {
+    const i = tabs.findIndex((t) => t.getAttribute("aria-pressed") === "true");
+    select(tabs[(i + 1) % tabs.length], true);
+  });
+});
+
 // Respect reduced motion: stop autoplaying loops and show their controls instead.
 if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
   document.querySelectorAll("video[autoplay]").forEach((v) => { v.pause(); v.removeAttribute("autoplay"); v.controls = true; });

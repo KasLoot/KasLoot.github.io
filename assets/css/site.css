@@ -102,15 +102,25 @@ h4 { font-size: 20px; font-weight: 600; }
 
 /* ---------- the signature: live monitor ---------- */
 .monitor-feature { padding-block: 8px 56px; }
-.monitor-feature .frame-row { display: grid; grid-template-columns: minmax(0, 1.7fr) minmax(0, 1fr); gap: 36px; align-items: end; }
+.monitor-feature .frame-row { display: grid; grid-template-columns: minmax(0, 1.7fr) minmax(0, 1fr); gap: 36px; align-items: center; }
 .console-frame { background: #0f141b; border-radius: 14px; overflow: hidden; box-shadow: 0 1px 0 var(--rule), 0 18px 40px -24px rgba(18, 27, 39, .45); }
 .console-frame .bar { display: flex; align-items: center; gap: 10px; padding: 9px 14px; font-family: var(--sans); font-size: 13px; color: #b9c3d2; background: #161d27; }
 .console-frame .bar .mark { width: 20px; height: 20px; border-radius: 6px; display: grid; place-items: center; background: #245bd8; color: #fff; font-weight: 700; font-size: 12px; }
 .console-frame .bar .live { margin-left: auto; display: inline-flex; align-items: center; gap: 6px; }
 .console-frame .bar .live::before { content: ""; width: 7px; height: 7px; border-radius: 50%; background: #4cc391; }
 .console-frame video { width: 100%; aspect-ratio: 848 / 480; background: #0f141b; }
-.monitor-feature figcaption { font-size: 18px; color: var(--graphite); }
-.monitor-feature figcaption p:first-child { color: var(--ink); font-size: 21px; line-height: 1.4; }
+.feature-head { display: flex; align-items: baseline; gap: 6px 18px; flex-wrap: wrap; margin-bottom: 18px; }
+.feature-head h2 { font-size: 34px; }
+.feature-head h2 a { color: inherit; text-decoration: none; }
+.feature-head h2 a:hover { color: var(--signal); }
+.feature-head p { margin: 0; font-family: var(--sans); font-size: 16px; color: var(--graphite); }
+.feature-text { font-size: 18px; color: var(--graphite); }
+.feature-caption { color: var(--ink); font-size: 21px; line-height: 1.4; }
+.console-frame .bar-title { white-space: nowrap; }
+.clip-tabs { margin-left: auto; display: inline-flex; gap: 4px; }
+.clip-tabs button { font: inherit; font-size: 13px; color: #b9c3d2; background: transparent; border: 1px solid transparent; border-radius: 6px; padding: 3px 10px; cursor: pointer; }
+.clip-tabs button:hover { color: #fff; }
+.clip-tabs button[aria-pressed="true"] { color: #fff; background: #263243; border-color: #3a4a60; }
 
 /* ---------- sections ---------- */
 .section { border-top: 1px solid var(--rule); padding: 48px 0 56px; }
@@ -161,6 +171,33 @@ h4 { font-size: 20px; font-weight: 600; }
 .mini .arrowhead { fill: var(--d-edge); }
 .mini .group { fill: none; stroke: var(--rule); stroke-width: 1.5; stroke-dasharray: 6 5; }
 .media figcaption { font-family: var(--sans); font-size: 13px; color: var(--faint); margin-top: 8px; }
+
+/* two RoboBrain clips in the project entry */
+.media.clip-pair { background: none; display: grid; gap: 14px; overflow: visible; }
+.clip-pair figure { margin: 0; }
+.clip-pair video { width: 100%; aspect-ratio: 848 / 480; border-radius: 10px; background: #0f141b; }
+.clip-pair figcaption { font-family: var(--sans); font-size: 13px; color: var(--faint); margin-top: 6px; }
+
+/* research journey: a real sequence, so the steps are numbered */
+.journey { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 36px 56px; }
+.journey > li:nth-child(3) { grid-column: 1 / -1; border-top: 1px solid var(--rule); padding-top: 32px; }
+.journey h3 { font-size: 25px; display: flex; align-items: center; gap: 12px; margin-bottom: 12px; }
+.journey .step { flex: 0 0 30px; height: 30px; border-radius: 50%; border: 1.5px solid var(--signal); color: var(--signal); font-family: var(--sans); font-size: 14px; font-weight: 600; display: grid; place-items: center; }
+.journey p { max-width: 72ch; }
+.gaps { margin: 0; }
+.gaps dt { font-family: var(--sans); font-size: 15px; font-weight: 600; margin-top: 14px; }
+.gaps dt:first-child { margin-top: 0; }
+.gaps dd { margin: 3px 0 0; font-size: 17px; color: var(--graphite); }
+.fit-intro { font-size: 21px; line-height: 1.45; }
+.fit { list-style: none; margin: 18px 0 0; padding: 0; }
+.fit > li { display: grid; grid-template-columns: 200px minmax(0, 1fr) 270px; gap: 8px 24px; align-items: baseline; padding: 14px 0; border-top: 1px solid var(--rule); }
+.fit > li:last-child { border-bottom: 1px solid var(--rule); }
+.fit .who a { font-size: 20px; text-decoration: none; }
+.fit .who a:hover { text-decoration: underline; }
+.fit .who span { display: block; font-family: var(--sans); font-size: 13px; color: var(--graphite); }
+.fit p { margin: 0; font-size: 17px; color: var(--graphite); }
+.chips { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 6px; }
+.chips li { font-family: var(--sans); font-size: 13px; padding: 3px 9px; border-radius: 999px; border: 1px solid var(--rule); color: var(--ink); background: var(--card); }
 
 /* compact list of earlier projects */
 .rows { list-style: none; margin: 0; padding: 0; }
@@ -413,6 +450,8 @@ h4 { font-size: 20px; font-weight: 600; }
 /* ---------- responsive ---------- */
 @media (max-width: 980px) {
   .monitor-feature .frame-row, .plate, .diagram, .console .c-grid, .stage-grid { grid-template-columns: minmax(0, 1fr); }
+  .fit > li { grid-template-columns: 160px minmax(0, 1fr); }
+  .fit .chips { grid-column: 2; }
 }
 @media (max-width: 700px) {
   body { font-size: 18px; }
@@ -420,7 +459,11 @@ h4 { font-size: 20px; font-weight: 600; }
   .hero-grid { grid-template-columns: minmax(0, 1fr); gap: 22px; }
   .portrait { width: 120px; }
   .affiliations li { border-right: 0; padding-right: 0; margin: 0 22px 10px 0; }
-  .videos, .stat-row { grid-template-columns: minmax(0, 1fr); }
+  .videos, .stat-row, .journey { grid-template-columns: minmax(0, 1fr); }
+  .fit > li { grid-template-columns: minmax(0, 1fr); gap: 6px; }
+  .fit .chips { grid-column: auto; }
+  .clip-tabs button { padding: 3px 7px; }
+  .console-frame .bar-title { display: none; }
   .section-grid > h2 { font-size: 30px; }
   .stat-row > div + div { border-left: 0; padding-left: 0; border-top: 1px solid var(--rule); }
   .timeline > li, .rows li, .facts li, .skills, .overlay-key { grid-template-columns: minmax(0, 1fr); gap: 4px; }

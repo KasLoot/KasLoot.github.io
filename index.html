@@ -51,31 +51,64 @@
     </div>
   </section>
 
-  <section class="monitor-feature wrap" aria-label="RoboBrain monitoring a task">
-    <figure class="frame-row" style="margin:0">
+  <section class="monitor-feature wrap" aria-labelledby="rb-feature-h" data-clips>
+    <div class="feature-head">
+      <h2 id="rb-feature-h"><a href="robobrain/">RoboBrain</a></h2>
+      <p>Real-time monitoring for robot tasks</p>
+    </div>
+    <div class="frame-row">
       <div class="console-frame">
-        <div class="bar"><span class="mark" aria-hidden="true">R</span><span>RoboBrain monitor, recorded run</span><span class="live">Camera 1</span></div>
-        <video src="assets/video/sort.mp4" poster="assets/video/sort-poster.jpg" autoplay muted loop playsinline preload="metadata" aria-label="RoboBrain monitoring a person sorting bricks into a box and cables onto a mat, with a live status overlay"></video>
+        <div class="bar">
+          <span class="mark" aria-hidden="true">R</span><span class="bar-title">Recorded run</span>
+          <span class="clip-tabs" role="group" aria-label="Choose a recorded run">
+            <button type="button" data-clip="sort" aria-pressed="true" data-src="assets/video/sort.mp4" data-poster="assets/video/sort-poster.jpg" data-label="RoboBrain monitoring a person sorting bricks into a box and cables onto a mat, with a live status overlay">Sorting</button>
+            <button type="button" data-clip="plug" aria-pressed="false" data-src="assets/video/plug.mp4" data-poster="assets/video/plug-poster.jpg" data-label="RoboBrain monitoring a robot arm inserting a USB plug, flagging a rotated-plug failure">Plug insertion</button>
+          </span>
+        </div>
+        <video src="assets/video/sort.mp4" poster="assets/video/sort-poster.jpg" autoplay muted playsinline preload="metadata" aria-label="RoboBrain monitoring a person sorting bricks into a box and cables onto a mat, with a live status overlay"></video>
       </div>
-      <figcaption>
-        <p>RoboBrain watching a sorting task. A vision-language model checks each fresh camera frame, and the overlay reports whether the task is on track, finished or failing, and how far along it is.</p>
-        <p>It runs live at 10–15 Hz on a single GPU, and the same system supervises a robot arm inserting a plug. You can generate your own monitor for this clip and replay it.</p>
+      <div class="feature-text">
+        <p class="feature-caption" data-caption="sort">Watching a person sort bricks into a box and cables onto a mat. A vision-language model checks each fresh camera frame, and the overlay reports whether the task is on track, finished or failing, and how many groups are sorted.</p>
+        <p class="feature-caption" data-caption="plug" hidden>Watching a robot arm insert a USB plug, at about 4× speed. On the second attempt the plug rotates in the gripper; RoboBrain flags the failure with the visible evidence, then re-arms when the task restarts.</p>
+        <p class="muted">It runs live at 10–15 Hz on a single GPU. You can generate your own monitor for either clip and replay it.</p>
         <ul class="links">
-          <li><a class="btn primary" href="robobrain/#try">Try RoboBrain on this clip</a></li>
+          <li><a class="btn primary" href="robobrain/#try">Try it on these clips</a></li>
           <li><a class="btn" href="robobrain/">How it works</a></li>
         </ul>
-      </figcaption>
-    </figure>
+      </div>
+    </div>
   </section>
 
   <section class="section" id="research" aria-labelledby="research-h">
     <div class="wrap section-grid">
       <h2 id="research-h">Research</h2>
-      <div class="prose">
-        <p class="lede">Today's robot policies try to generalise by pre-training on massive offline datasets, and mostly leave learning in the physical world aside. I think test-time adaptation is the missing piece.</p>
-        <p>A policy that keeps adapting while it acts should handle long-horizon tasks more reliably, transfer across environments, and even pick up new skills, without another round of large-scale data collection and pre-training.</p>
-        <p>This is the idea behind <a href="#robotta">RoboTTA</a>, my current research: can a robot complete long-horizon manipulation more reliably if it remembers what it observed, which actions it tried and what happened as a result, and keeps updating that memory while it works? My two recent systems approach the same problem from outside the policy. <a href="robobrain/">RoboBrain</a> watches a robot in real time and judges success, failure and progress from visual evidence. <a href="prefmem/">PrefMem</a> turns ambiguous instructions into confirmed goals, then decides from visual evidence when to ask, replan or stop.</p>
-      </div>
+      <ol class="journey">
+        <li>
+          <h3><span class="step" aria-hidden="true">1</span>Where physical intelligence is heading</h3>
+          <p>Robot learning is moving from scripted motions to general-purpose policies that take language and camera images and act in the physical world. I think the next step is robots that work the way people do on a job: they understand what someone actually wants, carry a long task through to the end, notice when something goes wrong, and get better with experience, not only through another round of offline pre-training.</p>
+        </li>
+        <li>
+          <h3><span class="step" aria-hidden="true">2</span>What's still missing</h3>
+          <dl class="gaps">
+            <dt>Closed-loop execution</dt>
+            <dd>A policy that never checks whether a step worked can't tell a finished task from a slipped grasp. Robots need to judge success, failure and progress from evidence, and decide when to ask, replan or stop.</dd>
+            <dt>Long-horizon tasks</dt>
+            <dd>Small errors compound over long tasks, and current vision-language-action models tend to replay training trajectories instead of following a new instruction in a new scene.</dd>
+            <dt>Self-improvement</dt>
+            <dd>Policies mostly improve through more data and more pre-training. They don't yet learn from their own attempts while they are deployed.</dd>
+          </dl>
+        </li>
+        <li>
+          <h3><span class="step" aria-hidden="true">3</span>How my work fits together</h3>
+          <p class="fit-intro">RoboBrain and PrefMem close the loop from outside the policy. RoboTTA, my current research, moves that loop inside the policy, so the robot itself improves while it works. RoboAstra is where they come together.</p>
+          <ul class="fit">
+            <li><div class="who"><a href="robobrain/">RoboBrain</a><span>Built, 2026</span></div><p>Judges success, failure and progress from visual evidence, in real time.</p><ul class="chips" aria-label="Addresses"><li>Closed loop</li></ul></li>
+            <li><div class="who"><a href="prefmem/">PrefMem</a><span>MSc dissertation, 2026</span></div><p>Confirms what the user wants, plans one step at a time, checks each step and verifies completion before calling the task done.</p><ul class="chips" aria-label="Addresses"><li>Closed loop</li><li>Long horizon</li></ul></li>
+            <li><div class="who"><a href="#robotta">RoboTTA</a><span>Ongoing research</span></div><p>A policy that remembers what it saw, what it tried and what happened, and updates that memory during execution.</p><ul class="chips" aria-label="Addresses"><li>Long horizon</li><li>Self-improvement</li></ul></li>
+            <li><div class="who"><a href="#roboastra">RoboAstra</a><span>In development</span></div><p>One system combining PrefMem and RoboBrain, with VLM-driven control for scenes the robot can't recover from.</p><ul class="chips" aria-label="Addresses"><li>Closed loop</li><li>Long horizon</li></ul></li>
+          </ul>
+        </li>
+      </ol>
     </div>
   </section>
 
@@ -84,7 +117,10 @@
       <h2 id="projects-h">Projects</h2>
       <div>
         <article class="plate" aria-labelledby="rb-h">
-          <a class="media" href="robobrain/"><img src="assets/video/plug-poster.jpg" width="848" height="480" alt="Robot arm at a power strip; RoboBrain's overlay reports a rotated-plug failure"></a>
+          <div class="media clip-pair">
+            <figure><video src="assets/video/plug.mp4" poster="assets/video/plug-poster.jpg" controls muted playsinline preload="none" aria-label="RoboBrain monitoring robot plug insertion"></video><figcaption>Robot plug insertion, about 4× speed</figcaption></figure>
+            <figure><video src="assets/video/sort.mp4" poster="assets/video/sort-poster.jpg" controls muted playsinline preload="none" aria-label="RoboBrain monitoring a sorting task with progress tracking"></video><figcaption>Sorting with progress tracking</figcaption></figure>
+          </div>
           <div>
             <h3 id="rb-h"><a href="robobrain/" style="color:inherit;text-decoration:none">RoboBrain</a></h3>
             <p class="meta"><span>Jun 2026 – present</span><span>Individual project</span></p>
