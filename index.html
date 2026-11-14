@@ -1,0 +1,213 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Yuxin Liu — Robotics and AI</title>
+<meta name="description" content="Yuxin Liu, robotics and AI researcher in London. Robot policies that finish long tasks and keep improving while they work. RoboBrain, PrefMem, RoboTTA.">
+<meta property="og:title" content="Yuxin Liu — Robotics and AI">
+<meta property="og:description" content="Robot policies that finish long tasks and keep improving while they work.">
+<meta property="og:image" content="https://kasloot.github.io/assets/img/og.jpg">
+<meta property="og:type" content="website">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="assets/img/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="assets/css/site.css">
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+<header class="site-head">
+  <div class="wrap">
+    <a class="home" href="./">Yuxin Liu</a>
+    <nav aria-label="Main">
+      <a href="#research">Research</a>
+      <a href="#projects">Projects</a>
+      <a href="#publications">Publications</a>
+      <a href="#experience">Experience</a>
+      <a href="assets/docs/Yuxin_Liu_CV.pdf">CV</a>
+    </nav>
+  </div>
+</header>
+
+<main id="main">
+  <section class="hero wrap" aria-labelledby="name">
+    <div class="hero-grid">
+      <img class="portrait" src="assets/img/yuxin.jpg" width="220" height="250" alt="Portrait of Yuxin Liu">
+      <div>
+        <h1 id="name">Yuxin Liu</h1>
+        <p class="thesis">Robot policies that finish long tasks and keep improving while they work.</p>
+        <p class="bio">I'm a robotics and AI researcher in London. I completed the MSc in Robotics and Artificial Intelligence at UCL in 2026, where I now teach, and I'm continuing research on test-time adaptation for long-horizon manipulation. Before that I worked on robot products and algorithms at AgiBot and Xiaomi.</p>
+        <ul class="affiliations" aria-label="Affiliations">
+          <li><a href="#education"><strong>UCL</strong><span>MSc Robotics and AI, teaching assistant</span></a></li>
+          <li><a href="#experience"><strong>AgiBot</strong><span>Product, Genie G1 robot</span></a></li>
+          <li><a href="#experience"><strong>Xiaomi</strong><span>Robot-dog navigation</span></a></li>
+        </ul>
+        <ul class="contact-links">
+          <li><a href="mailto:slyx361@outlook.com">slyx361@outlook.com</a></li>
+          <li><a href="https://github.com/KasLoot">GitHub</a></li>
+          <li><a href="https://www.linkedin.com/in/yuxin-liu-a08b32296/">LinkedIn</a></li>
+          <li><a href="assets/docs/Yuxin_Liu_CV.pdf">CV (PDF)</a></li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <section class="monitor-feature wrap" aria-label="RoboBrain monitoring a task">
+    <figure class="frame-row" style="margin:0">
+      <div class="console-frame">
+        <div class="bar"><span class="mark" aria-hidden="true">R</span><span>RoboBrain monitor, recorded run</span><span class="live">Camera 1</span></div>
+        <video src="assets/video/sort.mp4" poster="assets/video/sort-poster.jpg" autoplay muted loop playsinline preload="metadata" aria-label="RoboBrain monitoring a person sorting bricks into a box and cables onto a mat, with a live status overlay"></video>
+      </div>
+      <figcaption>
+        <p>RoboBrain watching a sorting task. A vision-language model checks each fresh camera frame, and the overlay reports whether the task is on track, finished or failing, and how far along it is.</p>
+        <p>It runs live at 10–15 Hz on a single GPU, and the same system supervises a robot arm inserting a plug. You can generate your own monitor for this clip and replay it.</p>
+        <ul class="links">
+          <li><a class="btn primary" href="robobrain/#try">Try RoboBrain on this clip</a></li>
+          <li><a class="btn" href="robobrain/">How it works</a></li>
+        </ul>
+      </figcaption>
+    </figure>
+  </section>
+
+  <section class="section" id="research" aria-labelledby="research-h">
+    <div class="wrap section-grid">
+      <h2 id="research-h">Research</h2>
+      <div class="prose">
+        <p class="lede">Today's robot policies try to generalise by pre-training on massive offline datasets, and mostly leave learning in the physical world aside. I think test-time adaptation is the missing piece.</p>
+        <p>A policy that keeps adapting while it acts should handle long-horizon tasks more reliably, transfer across environments, and even pick up new skills, without another round of large-scale data collection and pre-training.</p>
+        <p>My current question is whether a robot completes long-horizon manipulation more reliably when it remembers what it observed, which actions it tried, and what happened as a result. My recent systems work approaches the same problem from outside the policy: agentic layers that watch a robot, judge progress from visual evidence, and decide when to ask, replan or stop.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id="projects" aria-labelledby="projects-h">
+    <div class="wrap section-grid">
+      <h2 id="projects-h">Projects</h2>
+      <div>
+        <article class="plate" aria-labelledby="rb-h">
+          <a class="media" href="robobrain/"><img src="assets/video/plug-poster.jpg" width="848" height="480" alt="Robot arm at a power strip; RoboBrain's overlay reports a rotated-plug failure"></a>
+          <div>
+            <h3 id="rb-h"><a href="robobrain/" style="color:inherit;text-decoration:none">RoboBrain</a></h3>
+            <p class="meta"><span>Jun 2026 – present</span><span>Individual project</span></p>
+            <p>A real-time, closed-loop monitor for robot tasks. Separate success and failure specialists each ask a vision-language model one narrow question about the current frame, and a positive answer must survive a short verification round before the status changes. A Task Builder turns a plain-language description and a scene photo into the whole monitoring setup.</p>
+            <ul class="facts">
+              <li><b>197/198</b><span>correct episode outcomes across three plug-insertion datasets</span></li>
+              <li><b>10–15 Hz</b><span>live monitoring with Gemma 4 26B A4B on one RTX Pro 6000</span></li>
+              <li><b>2 tasks</b><span>robot plug insertion, and object sorting with progress tracking</span></li>
+            </ul>
+            <ul class="links">
+              <li><a class="btn primary" href="robobrain/">Project page</a></li>
+              <li><a class="btn" href="robobrain/#try">Try it</a></li>
+              <li><a class="btn" href="https://github.com/KasLoot/RoboBrain">Code</a></li>
+            </ul>
+          </div>
+        </article>
+
+        <article class="plate" aria-labelledby="pm-h">
+          <a class="media figure-box" href="prefmem/"><img src="assets/img/prefmem-architecture.svg" width="760" height="500" alt="PrefMem architecture: user, HRI agent, memory agent and preference store, deterministic runtime and controller, planner, monitor and validator services, execution adapter, and the physical or MuJoCo scene"></a>
+          <div>
+            <h3 id="pm-h"><a href="prefmem/" style="color:inherit;text-decoration:none">PrefMem</a></h3>
+            <p class="meta"><span>Apr – Sep 2026</span><span>MSc dissertation, UCL</span><span>Supervisor: Dr Valerio Modugno</span></p>
+            <p>A preference-aware, evidence-gated agentic layer above any robot action executor. Five model-facing agents handle conversation, preference memory, planning, step monitoring and final validation, while a deterministic runtime owns the goal, confirmation, state transitions and recovery. It needs no training.</p>
+            <ul class="facts">
+              <li><b>0 → 36</b><span>of 36 goals resolved without asking, once one relevant preference is in memory</span></li>
+              <li><b>21/21</b><span>visibly incomplete states caught by the Validator, against 0/21 without it</span></li>
+              <li><b>12/12</b><span>MuJoCo episodes that reached the physical goal</span></li>
+            </ul>
+            <ul class="links">
+              <li><a class="btn primary" href="prefmem/">Project page</a></li>
+              <li><a class="btn" href="https://github.com/KasLoot/RoboPref">Code</a></li>
+            </ul>
+          </div>
+        </article>
+
+        <div class="pair" style="margin-bottom:44px">
+          <div>
+            <h3>RoboTTA</h3>
+            <p class="meta"><span>Oct 2026 – present</span><span class="status-note">Ongoing research</span></p>
+            <p>Can a robot complete long-horizon manipulation more reliably by remembering what it observed, which actions it tried and what happened? I'm studying how a policy can keep and update that memory during execution, comparing test-time training layers, liquid neural networks, Mamba and recurrent networks.</p>
+          </div>
+          <div>
+            <h3>RoboAstra</h3>
+            <p class="meta"><span>Sep 2026 – present</span><span class="status-note">In development</span></p>
+            <p>An end-to-end robot control system driven by natural-language instructions. It brings PrefMem's interaction and memory together with RoboBrain's monitoring, and adds VLM-driven control for scenes the execution agent can't recover from.</p>
+          </div>
+        </div>
+
+        <h3 style="font-size:22px;margin-bottom:12px">Earlier projects</h3>
+        <ul class="rows">
+          <li><span class="when">May 2026</span><div><h4><a href="https://github.com/KasLoot/Intelligent_Planner">Intelligent Planner</a></h4><span class="role">Group project, I led design and development</span><p>A VLM-driven agent for travel: transport, restaurant and accommodation booking, points of interest, multi-day plans and budget tracking.</p></div></li>
+          <li><span class="when">Oct 2025</span><div><h4><a href="https://github.com/KasLoot/Query_Distribution_System">Query Distribution System</a></h4><span class="role">Group project, I led design and development</span><p>An agentic system that turns customer feedback into feature or fix requests, then assigns an owner and a priority.</p></div></li>
+          <li><span class="when">2023</span><div><h4>Real-time detection and tracking of marine animals</h4><span class="role">BSc dissertation, University of Birmingham</span><p>A CNN detector and tracker that keeps following animals behind obstacles, stabilised with a Kalman filter. I annotated the dataset, including the occluded cases.</p></div></li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id="publications" aria-labelledby="pubs-h">
+    <div class="wrap section-grid">
+      <h2 id="pubs-h">Publications</h2>
+      <ol class="pubs">
+        <li>
+          <a class="title" href="https://doi.org/10.1016/j.aej.2025.03.103">Cancer diagnosis in smart healthcare: Optimisation of the MamCancerX model's multiple instance learning framework</a>
+          <span class="authors">Yuliang Gai, Ji Hao, <b>Yuxin Liu</b>, Minghao Li. <span class="venue">Alexandria Engineering Journal</span>, 2025.</span>
+          <p class="contrib">I helped curate pathology image data and validate MamCancerX, a multiple-instance learning model for classifying whole-slide images, evaluated on CAMELYON16 and BRACS.</p>
+        </li>
+        <li>
+          <a class="title" href="https://link.springer.com/article/10.1007/s10723-023-09709-3">Markovian with Federated Deep Recurrent Neural Network for Edge—IoMT to Improve Healthcare in Smart Cities</a>
+          <span class="authors">Yuliang Gai, <b>Yuxin Liu</b>, Minghao Li, Shengcheng Yang. <span class="venue">Journal of Grid Computing</span> 22, 2024.</span>
+          <p class="contrib">I curated the experimental data and helped validate MDP-FDRNN, a federated recurrent network for allocating computing resources across healthcare edge devices.</p>
+        </li>
+      </ol>
+    </div>
+  </section>
+
+  <section class="section" id="experience" aria-labelledby="exp-h">
+    <div class="wrap section-grid">
+      <h2 id="exp-h">Experience</h2>
+      <div>
+        <ol class="timeline" aria-label="Industry experience">
+          <li><span class="when">Oct 2024 – Apr 2025</span><div><h4>AgiBot</h4><p class="role">Product manager intern, Genie department</p><ul><li>Led product design for the Genie G1 robot's human–machine interface and its VR data-collection software.</li><li>Supported international product design for Genie Studio.</li></ul></div></li>
+          <li><span class="when">Apr – Aug 2024</span><div><h4>Xiaomi Robotics</h4><p class="role">Algorithm engineer intern</p><ul><li>Researched and designed navigation models for robot dogs.</li><li>Built a data pipeline and a training framework.</li></ul></div></li>
+        </ol>
+        <p class="sub-h">Teaching</p>
+        <ol class="timeline" aria-label="Teaching">
+          <li><span class="when">Oct 2026 – present</span><div><h4>University College London</h4><p class="role">Teaching assistant, MSc Robotics and AI and MSc Internet of Things</p><p style="margin:0">I lead lab sessions in machine learning for robotics, motion planning and modelling, estimation and control, embedded-systems design, and scene understanding and situational awareness.</p></div></li>
+        </ol>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id="education" aria-labelledby="edu-h">
+    <div class="wrap section-grid">
+      <h2 id="edu-h">Education</h2>
+      <ol class="timeline">
+        <li><span class="when">Sep 2025 – Sep 2026</span><div><h4>University College London</h4><p class="role">MSc Robotics and Artificial Intelligence, Department of Computer Science</p><p style="margin:0">Dissertation: <a href="prefmem/">PrefMem</a>, a preference- and evidence-gated agentic system for robotic manipulation. Supervised by Dr Valerio Modugno, UCL Intelligent Robotics Group.</p></div></li>
+        <li><span class="when">Sep 2020 – Jun 2023</span><div><h4>University of Birmingham</h4><p class="role">BSc Computer Science and Artificial Intelligence</p><p style="margin:0">Dissertation: real-time object detection and tracking for marine animals. Supervised by Dr Minqing Li.</p></div></li>
+      </ol>
+    </div>
+  </section>
+
+  <section class="section" id="skills" aria-labelledby="skills-h">
+    <div class="wrap section-grid">
+      <h2 id="skills-h">Skills</h2>
+      <dl class="skills">
+        <dt>Programming</dt><dd>Python, PyTorch, MuJoCo, LangChain, LangGraph</dd>
+        <dt>Product</dt><dd>PRD writing, prototyping in Axure, Figma and Sketch</dd>
+        <dt>Systems</dt><dd>Ubuntu, Windows, macOS</dd>
+        <dt>Languages</dt><dd>English, Chinese</dd>
+        <dt>Also</dt><dd>Music production, video editing</dd>
+        <dt>Award</dt><dd>Gold medal, FT International Engineering and Technology Challenge 2016, Germany</dd>
+      </dl>
+    </div>
+  </section>
+</main>
+
+<footer class="site-foot">
+  <div class="wrap">
+    <span>Yuxin Liu, London. Updated November 2026.</span>
+    <span><a href="mailto:slyx361@outlook.com">Email</a>&nbsp;&nbsp; <a href="https://github.com/KasLoot">GitHub</a>&nbsp;&nbsp; <a href="https://www.linkedin.com/in/yuxin-liu-a08b32296/">LinkedIn</a></span>
+  </div>
+</footer>
+<script src="assets/js/site.js" defer></script>
+</body>
+</html>

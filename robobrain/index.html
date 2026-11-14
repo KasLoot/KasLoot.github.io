@@ -1,0 +1,209 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>RoboBrain — Yuxin Liu</title>
+<meta name="description" content="RoboBrain: a real-time, closed-loop monitor for robot tasks. Generate your own monitor from a description and replay it on a recorded run.">
+<meta property="og:title" content="RoboBrain — real-time monitoring for robot tasks">
+<meta property="og:description" content="Specialist VLM checks, verification rounds and progress tracking. Try it on a recorded run.">
+<meta property="og:image" content="https://kasloot.github.io/assets/img/og.jpg">
+<link rel="icon" href="../assets/img/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="../assets/css/site.css">
+<script src="../config.js"></script>
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+<header class="site-head">
+  <div class="wrap">
+    <a class="home" href="../">Yuxin Liu</a>
+    <nav aria-label="Main">
+      <a href="../#research">Research</a>
+      <a href="../#projects" aria-current="page">Projects</a>
+      <a href="../#publications">Publications</a>
+      <a href="../#experience">Experience</a>
+      <a href="../assets/docs/Yuxin_Liu_CV.pdf">CV</a>
+    </nav>
+  </div>
+</header>
+
+<main id="main" class="wrap">
+  <header class="page-head">
+    <p class="crumb"><a href="../#projects">Projects</a> / RoboBrain</p>
+    <h1>RoboBrain</h1>
+    <p class="deck">A closed-loop monitor that watches a robot work and reports, in real time, whether the task is on track, finished or failing, and why.</p>
+    <ul class="links">
+      <li><a class="btn primary" href="#try">Try it on a recorded run</a></li>
+      <li><a class="btn" href="https://github.com/KasLoot/RoboBrain">Code on GitHub</a></li>
+    </ul>
+    <div class="stat-row">
+      <div><b>197 / 198</b><span>correct episode outcomes on three plug-insertion datasets (104/105, 45/45, 48/48)</span></div>
+      <div><b>10–15 Hz</b><span>live monitoring with Gemma 4 26B A4B on one RTX Pro 6000</span></div>
+      <div><b>One description</b><span>is enough for the Task Builder to draft every specialist and progress stage</span></div>
+    </div>
+  </header>
+
+  <section class="block" aria-labelledby="runs-h">
+    <h2 id="runs-h">Two recorded runs</h2>
+    <p class="intro">Both overlays are RoboBrain's own output during the run. In continuous monitoring the status re-arms: when a failure is cleared and the task restarts, it returns to ON_GOING.</p>
+    <div class="videos">
+      <figure>
+        <video src="../assets/video/plug.mp4" poster="../assets/video/plug-poster.jpg" controls muted playsinline preload="metadata"></video>
+        <figcaption><b>Plug insertion, about 4× speed</b>A robot arm inserts a USB adapter three times. The second attempt fails: the adapter rotates in the gripper, and RoboBrain flags ROTATED_OR_MISALIGNED with the visible evidence.</figcaption>
+      </figure>
+      <figure>
+        <video src="../assets/video/sort.mp4" poster="../assets/video/sort-poster.jpg" controls muted playsinline preload="metadata"></video>
+        <figcaption><b>Sorting bricks and cables, real time</b>Bricks belong in the box and cables on the mat. Progress counts sorted groups, and a misplaced object raises WRONG_POSITIONING.</figcaption>
+      </figure>
+    </div>
+    <dl class="overlay-key">
+      <dt>Status</dt><dd>ON_GOING, SUCCESS or FAIL, decided only after verification.</dd>
+      <dt>Failure type</dt><dd>Which failure specialist confirmed the problem, with its one-sentence evidence.</dd>
+      <dt>Progress</dt><dd>The confirmed progress stage; "Last known" while a new stage is still being confirmed.</dd>
+      <dt>Evidence</dt><dd>Whether that stage is confirmed or pending, and how old the evidence is.</dd>
+    </dl>
+  </section>
+
+  <section class="block" aria-labelledby="how-h">
+    <h2 id="how-h">How it works</h2>
+    <p class="intro">RoboBrain splits judgment into narrow questions. Each specialist answers one question about the current frame, and deterministic code decides what the answers mean.</p>
+    <div class="diagram" data-diagram>
+      <p class="canvas-hint">Swipe sideways to see the whole diagram.</p>
+      <div class="canvas"><svg viewBox="0 0 960 420" role="group" aria-label="RoboBrain architecture. Select a step for details.">
+        <defs>
+          <marker id="ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path class="arrowhead" d="M0,0 L10,5 L0,10 z"/></marker>
+        </defs>
+        <text class="glabel" x="20" y="12">Setup, once per task</text>
+        <path class="edge" d="M210,51 H256" marker-end="url(#ah)"/>
+        <path class="edge" d="M460,51 H506" marker-end="url(#ah)"/>
+        <path class="edge" d="M710,51 H756" marker-end="url(#ah)"/>
+        <path class="edge dash" d="M850,82 V116 H360 V146" marker-end="url(#ah)"/>
+        <text class="elabel" x="560" y="110">configures</text>
+        <rect class="group" x="246" y="150" width="228" height="258"/>
+        <text class="glabel" x="20" y="148">Monitoring, continuously</text>
+        <path class="edge" d="M210,250 H235 V203 H256" marker-end="url(#ah)"/>
+        <path class="edge" d="M210,282 H235 V358 H256" marker-end="url(#ah)"/>
+        <path class="edge" d="M460,203 H506" marker-end="url(#ah)"/>
+        <path class="edge" d="M710,203 H756" marker-end="url(#ah)"/>
+        <path class="edge" d="M850,241 V316" marker-end="url(#ah)"/>
+        <path class="edge" d="M460,358 H506" marker-end="url(#ah)"/>
+        <path class="edge" d="M710,358 H756" marker-end="url(#ah)"/>
+
+        <g class="node human" data-title="Task description" data-body="Describe what success looks like and which failures matter, in plain language.|Attach scene photos so the builder can see the targets and the distractors.">
+          <rect x="20" y="20" width="190" height="62"/><text class="t" x="34" y="45">Task description</text><text class="s" x="34" y="64">plus scene photos</text></g>
+        <g class="node agent" data-title="Task Builder" data-body="A separate LLM (Kimi K3 on Ollama Cloud by default) turns the conversation into a task draft: one success specialist covering every completion condition, one specialist per requested failure, and optional progress stages.|Its system prompt forbids inventing failures, object counts, cameras or thresholds, and asks for concrete, occlusion-aware prompts that a small monitoring model can follow.">
+          <rect x="260" y="20" width="200" height="62"/><text class="t" x="274" y="45">Task Builder</text><text class="s" x="274" y="64">an LLM drafts the setup</text></g>
+        <g class="node host" data-title="Validated draft" data-body="The draft is checked locally against a strict schema and RoboBrain's own rules: at most one success specialist, distinct names, only real camera sources and approved reference images.|If it fails, the builder gets exactly one repair attempt with the validation error. Invalid drafts never become tasks.">
+          <rect x="510" y="20" width="200" height="62"/><text class="t" x="524" y="45">Validated draft</text><text class="s" x="524" y="64">specialists + progress stages</text></g>
+        <g class="node human" data-title="Review and create" data-body="Nothing runs until you have read the generated prompts. You can edit names, prompts, failure types, cameras and references before creating the task.">
+          <rect x="760" y="20" width="180" height="62"/><text class="t" x="774" y="45">Review and create</text><text class="s" x="774" y="64">edit, then save the task</text></g>
+
+        <g class="node data" data-title="Camera sources" data-body="Each physical camera is opened once and publishes to a shared buffer at 30 fps, independent of model latency.|A task can use one or two views, and recorded videos can stand in for cameras to replay a run.">
+          <rect x="20" y="228" width="190" height="76"/><text class="t" x="34" y="253">Camera sources</text><text class="s" x="34" y="272">1–2 views at 30 fps</text><text class="s" x="34" y="289">shared frame buffers</text></g>
+        <g class="node agent" data-title="Outcome specialists" data-body="Each specialist asks one narrow question about the newest frame and must answer POSITIVE, NEGATIVE or UNCERTAIN with one sentence of visible evidence.|All specialists run in parallel with thinking off and temperature zero. A new batch starts as soon as the last one returns.">
+          <rect x="260" y="165" width="200" height="76"/><text class="t" x="274" y="190">Outcome specialists</text><text class="s" x="274" y="209">1 success + failure checks</text><text class="s" x="274" y="226">parallel VLM calls per batch</text></g>
+        <g class="node host" data-title="Verification round" data-body="A positive answer doesn't change the status by itself. It starts one round of ten observations over one second for every specialist: thirty requests in all.|A specialist is confirmed only with more than five positive votes. Normal monitoring continues during the round, and rounds never overlap or queue.">
+          <rect x="510" y="165" width="200" height="76"/><text class="t" x="524" y="190">Verification round</text><text class="s" x="524" y="209">10 frames over 1 second</text><text class="s" x="524" y="226">more than 5 positive votes</text></g>
+        <g class="node decide" data-title="Decision" data-body="Confirmed success alone gives SUCCESS, and confirmed failure alone gives FAIL. A conflict, or too little evidence, stays ON_GOING. Request errors count as UNCERTAIN, never as evidence.|In continuous monitoring the result re-arms: when the event disappears, the status returns to ON_GOING.">
+          <rect x="760" y="165" width="180" height="76"/><text class="t" x="774" y="190">Decision</text><text class="s" x="774" y="209">SUCCESS or FAIL</text><text class="s" x="774" y="226">ON_GOING on conflict</text></g>
+        <g class="node agent" data-title="Progress observer" data-body="A separate worker, one request at a time, picks the predefined progress stage that matches the scene, or UNKNOWN.|It never decides SUCCESS or FAIL. The outcome specialists stay responsible for that.">
+          <rect x="260" y="320" width="200" height="76"/><text class="t" x="274" y="345">Progress observer</text><text class="s" x="274" y="364">one stage, or UNKNOWN</text><text class="s" x="274" y="381">never decides the outcome</text></g>
+        <g class="node host" data-title="Progress tracker" data-body="A stage is confirmed after two consecutive fresh observations agree, and duplicate frames don't count twice.|Pending, unknown or stale results keep the last confirmed stage and say so on screen.">
+          <rect x="510" y="320" width="200" height="76"/><text class="t" x="524" y="345">Progress tracker</text><text class="s" x="524" y="364">2 fresh matches confirm</text><text class="s" x="524" y="381">flags stale evidence</text></g>
+        <g class="node data" data-title="Live overlay and records" data-body="The same overlay drives the live canvas and the recording: status, failure type, progress and evidence age.|With recording on, each run saves an annotated H.264 video, a JSON-lines event log with every request and response, and a readable JSON report.">
+          <rect x="760" y="320" width="180" height="76"/><text class="t" x="774" y="345">Live overlay</text><text class="s" x="774" y="364">status, failure, progress</text><text class="s" x="774" y="381">video, log and report</text></g>
+      </svg></div>
+      <aside class="diagram-note" aria-live="polite">
+        <h4>Why the answers are split up</h4>
+        <p>Blue steps are model calls. Purple steps are deterministic code, so no single model answer can change the status on its own.</p>
+        <p class="hint">Hover, tab to or tap a step to see what it does.</p>
+      </aside>
+    </div>
+    <ul class="legend" aria-label="Diagram key">
+      <li class="human"><i></i>You</li><li class="agent"><i></i>Model call</li><li class="host"><i></i>Deterministic code</li><li class="data"><i></i>Data and outputs</li><li class="decide"><i></i>Decision</li>
+    </ul>
+  </section>
+
+  <section class="block" id="try" aria-labelledby="try-h">
+    <h2 id="try-h">Try it</h2>
+    <p class="intro">Describe a monitoring task for one of the recorded clips. RoboBrain's own Task Builder prompt writes the specialists, and the replay then plays the clip while your monitor judges it, keyframe by keyframe. You can compare the result with the original run afterwards.</p>
+
+    <div class="console" id="trynow">
+      <div class="c-head"><span class="mark" aria-hidden="true">R</span><strong>RoboBrain</strong><span class="badge">Task Builder on&nbsp;<span id="tn-model">gpt-6.1-terra</span></span></div>
+      <div class="c-grid">
+        <div class="c-card">
+          <div class="c-card-head"><h3>Describe the task</h3></div>
+          <fieldset class="clip-pick">
+            <legend>Replay clip</legend>
+            <label><input type="radio" name="tn-clip" value="sort" checked><img src="../assets/replay/sort/k01.jpg" alt="">Sort bricks and cables<small>54 s, 12 keyframes</small></label>
+            <label><input type="radio" name="tn-clip" value="plug"><img src="../assets/replay/plug/k01.jpg" alt="">Plug insertion<small>20 s at 4×, 10 keyframes</small></label>
+          </fieldset>
+          <label>Your description
+            <textarea id="tn-task" maxlength="1500" rows="7"></textarea></label>
+          <span class="hint" id="tn-count"></span>
+          <fieldset class="key-mode">
+            <legend>OpenAI access</legend>
+            <label class="opt"><input type="radio" name="tn-mode" value="demo"><span>Use the demo key<small id="tn-demo-note">Checking…</small></span></label>
+            <label class="opt"><input type="radio" name="tn-mode" value="own" checked><span>Use my own OpenAI key<small>Sent straight from your browser to OpenAI and kept only in this tab. A full run costs roughly 5–10 US cents.</small></span></label>
+            <label id="tn-key-wrap">OpenAI API key<input type="password" id="tn-key" autocomplete="off" spellcheck="false" placeholder="sk-…"></label>
+          </fieldset>
+          <div id="tn-turnstile" hidden></div>
+          <div class="actions" style="margin-top:16px"><button class="primary" id="tn-generate" type="button">Generate monitor</button><span id="tn-gen-status" aria-live="polite"></span></div>
+          <div id="tn-gen-msg"></div>
+        </div>
+        <div class="c-card">
+          <div class="c-card-head"><h3>Task preview</h3><span class="badge" id="tn-draft-badge">Draft</span></div>
+          <div id="tn-preview-body"></div>
+          <div class="actions" style="margin-top:14px"><button class="primary" id="tn-run" type="button" disabled>Run replay</button><span class="hint" id="tn-run-note"></span></div>
+        </div>
+      </div>
+
+      <div class="replay" id="tn-replay" hidden>
+        <div class="c-card operating">
+          <div>
+            <div class="lbl">Operating status</div>
+            <div class="big" id="tn-status" data-status="ON_GOING" aria-live="polite">ON_GOING</div>
+            <p id="tn-failure">Failure type: NONE</p>
+            <p id="tn-detail">Waiting for the first keyframe</p>
+          </div>
+          <div class="actions">
+            <div class="view-toggle" role="group" aria-label="Video view">
+              <button type="button" id="tn-view-mine" aria-pressed="true">Your monitor</button>
+              <button type="button" id="tn-view-orig" aria-pressed="false">Original run</button>
+            </div>
+            <button type="button" id="tn-replay-btn">Restart video</button>
+          </div>
+        </div>
+        <div class="stage-grid">
+          <div>
+            <div class="stage" id="tn-stage"><video id="tn-video" muted playsinline preload="auto"></video></div>
+            <p class="hint" id="tn-orig-note" hidden></p>
+            <div class="strip" id="tn-strip" aria-label="Keyframes"></div>
+          </div>
+          <div>
+            <div class="c-card prog-panel" id="tn-prog"></div>
+            <p class="hint" style="margin:16px 0 0">How this replay differs from live RoboBrain:</p>
+            <ul class="notes" id="tn-notes"></ul>
+          </div>
+        </div>
+        <div class="c-card obs-wrap">
+          <details><summary><h3>Every model answer</h3><span class="hint" id="tn-obs-count"></span></summary>
+          <table class="obs"><thead><tr><th>Keyframe</th><th>Specialist</th><th>Verdict</th><th>Visible evidence</th></tr></thead><tbody id="tn-obs"></tbody></table>
+          </details>
+        </div>
+      </div>
+      <noscript><p>The demo needs JavaScript. The recorded runs above show RoboBrain's own output.</p></noscript>
+    </div>
+  </section>
+</main>
+
+<footer class="site-foot">
+  <div class="wrap">
+    <span>Yuxin Liu, London. Updated November 2026.</span>
+    <span><a href="mailto:slyx361@outlook.com">Email</a>&nbsp;&nbsp; <a href="https://github.com/KasLoot">GitHub</a>&nbsp;&nbsp; <a href="https://www.linkedin.com/in/yuxin-liu-a08b32296/">LinkedIn</a></span>
+  </div>
+</footer>
+<script src="../assets/js/site.js" defer></script>
+<script type="module" src="../assets/js/trynow.js"></script>
+</body>
+</html>

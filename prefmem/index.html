@@ -1,0 +1,234 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>PrefMem — Yuxin Liu</title>
+<meta name="description" content="PrefMem: a preference-aware, evidence-gated agentic system for interactive robot manipulation with ambiguous instructions. MSc dissertation, UCL.">
+<meta property="og:title" content="PrefMem — preference-aware, evidence-gated robot agents">
+<meta property="og:description" content="MSc dissertation, UCL. An agentic layer above any action executor, with no training.">
+<meta property="og:image" content="https://kasloot.github.io/assets/img/og.jpg">
+<link rel="icon" href="../assets/img/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="../assets/css/site.css">
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+<header class="site-head">
+  <div class="wrap">
+    <a class="home" href="../">Yuxin Liu</a>
+    <nav aria-label="Main">
+      <a href="../#research">Research</a>
+      <a href="../#projects" aria-current="page">Projects</a>
+      <a href="../#publications">Publications</a>
+      <a href="../#experience">Experience</a>
+      <a href="../assets/docs/Yuxin_Liu_CV.pdf">CV</a>
+    </nav>
+  </div>
+</header>
+
+<main id="main" class="wrap">
+  <header class="page-head">
+    <p class="crumb"><a href="../#projects">Projects</a> / PrefMem</p>
+    <h1>PrefMem</h1>
+    <p class="deck">A preference-aware, evidence-gated agentic layer that turns ambiguous instructions into confirmed, monitored robot tasks, without training a new policy.</p>
+    <p class="meta"><span>MSc dissertation, UCL, 2026</span><span>Supervised by Dr Valerio Modugno, UCL Intelligent Robotics Group</span></p>
+    <ul class="links">
+      <li><a class="btn primary" href="https://github.com/KasLoot/RoboPref">Code on GitHub</a></li>
+      <li><a class="btn" href="https://github.com/KasLoot/RoboPref/tree/main/thesis">Thesis source</a></li>
+    </ul>
+    <div class="stat-row">
+      <div><b>0 → 36 / 36</b><span>goals resolved without a question, once one applicable preference is in memory</span></div>
+      <div><b>21 / 21</b><span>visibly incomplete states caught by the Validator; stopping after actions caught none</span></div>
+      <div><b>12 / 12</b><span>MuJoCo episodes that formed the correct goal contract and reached it physically</span></div>
+    </div>
+  </header>
+
+  <section class="block" aria-labelledby="why-h">
+    <h2 id="why-h">The problem</h2>
+    <div class="prose">
+      <p>Vision-language-action models map language and camera images to robot actions, but what a person wants often lies beyond a single instruction. Current VLAs also tend to replay training trajectories rather than follow the semantics of a new instruction, especially on long-horizon tasks in new environments. Recent fixes, such as SemanticVLA and MeM, change the model architecture and need retraining, and neither addresses understanding the user's intent.</p>
+      <p>PrefMem takes a different path. Instead of training a new policy, it adds an orchestration layer above an interchangeable action executor. Five model-facing agents handle conversation, preference memory, planning, step monitoring and final validation. A deterministic runtime and receding-horizon controller own everything that must not drift: goal identity, confirmation, task publication, state transitions, evidence rules and bounded recovery.</p>
+    </div>
+  </section>
+
+  <section class="block" aria-labelledby="arch-h">
+    <h2 id="arch-h">Architecture</h2>
+    <p class="intro">Only the HRI Agent talks to people. Every model returns a typed result, and only the host changes state.</p>
+    <div class="diagram" data-diagram>
+      <p class="canvas-hint">Swipe sideways to see the whole diagram.</p>
+      <div class="canvas"><svg viewBox="0 0 960 400" role="group" aria-label="PrefMem architecture. Select a component for details.">
+        <defs>
+          <marker id="pa" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path class="arrowhead" d="M0,0 L10,5 L0,10 z"/></marker>
+        </defs>
+        <path class="edge" d="M194,72 H236" marker-start="url(#pa)" marker-end="url(#pa)"/>
+        <path class="edge" d="M434,72 H486" marker-start="url(#pa)" marker-end="url(#pa)"/>
+        <path class="edge" d="M724,72 H776" marker-start="url(#pa)" marker-end="url(#pa)"/>
+        <path class="edge" d="M335,108 V176" marker-start="url(#pa)" marker-end="url(#pa)"/>
+        <path class="edge" d="M194,212 H236" marker-start="url(#pa)" marker-end="url(#pa)"/>
+        <path class="edge" d="M560,118 V196" marker-start="url(#pa)" marker-end="url(#pa)"/>
+        <text class="elabel" x="570" y="162">typed state, fresh evidence</text>
+        <path class="edge" d="M690,118 V136 H860 V196" marker-end="url(#pa)"/>
+        <text class="elabel" x="752" y="130">one current task</text>
+        <path class="edge" d="M605,268 V316" marker-start="url(#pa)" marker-end="url(#pa)"/>
+        <path class="edge" d="M860,268 V352 H726" marker-end="url(#pa)"/>
+
+        <g class="node human" data-title="User or operator" data-body="People give requests, answer clarifications and confirm the exact goal, always through the HRI Agent.|The operator GUI can also stop the robot at any time.">
+          <rect x="20" y="40" width="172" height="64"/><text class="t" x="34" y="67">User or operator</text><text class="s" x="34" y="86">requests, answers, stops</text></g>
+        <g class="node agent" data-title="HRI Agent" data-body="The only user-facing agent. It reads the current camera frame and runtime state, retrieves relevant preferences, and asks one focused question when the outcome or a constraint is ambiguous.|Preference writes need explicit future-facing intent, or a yes to a dedicated memory-consent question.">
+          <rect x="240" y="40" width="192" height="64"/><text class="t" x="254" y="67">HRI Agent</text><text class="s" x="254" y="86">the only user-facing agent</text></g>
+        <g class="node host" data-title="Deterministic core" data-body="PrefMemRuntime and the receding-horizon controller own the authoritative goal, task identities, confirmation, state transitions, publication, evidence rules and loop guards.|Models propose; the host decides.">
+          <rect x="490" y="30" width="232" height="86"/><text class="t" x="504" y="58">Deterministic core</text><text class="s" x="504" y="78">PrefMemRuntime</text><text class="s" x="504" y="96">+ receding-horizon controller</text></g>
+        <g class="node agent" data-title="Planner, Monitor, Validator" data-body="The Planner proposes up to three next tasks from a fresh frame, the frozen goal and the history; only the first is published.|The Monitor judges whether the current task finished, from temporally stable evidence. The Validator checks the frozen visual checklist before anything is called complete.">
+          <rect x="780" y="30" width="160" height="86"/><text class="t" x="794" y="58">Planner</text><text class="t" x="794" y="78">Monitor</text><text class="t" x="794" y="98">Validator</text></g>
+        <g class="node data" data-title="Preference store" data-body="Text records plus their embeddings. Records are scoped to a user and a task, and change only through explicit memory operations.">
+          <rect x="20" y="180" width="172" height="64"/><text class="t" x="34" y="207">Preference store</text><text class="s" x="34" y="226">text + embeddings</text></g>
+        <g class="node agent" data-title="Memory Agent" data-body="Retrieves preferences scoped to the user and task, filters them for semantic applicability, and returns either the relevant preferences or the result of a consented change.">
+          <rect x="240" y="180" width="192" height="64"/><text class="t" x="254" y="207">Memory Agent</text><text class="s" x="254" y="226">scoped preferences</text></g>
+        <g class="node data" data-title="Observation and publication surfaces" data-body="Camera frames come in as fresh evidence; one current instruction goes out on the task page.">
+          <rect x="490" y="200" width="232" height="66"/><text class="t" x="504" y="228">Observation surfaces</text><text class="s" x="504" y="247">camera frames and task page</text></g>
+        <g class="node host" data-title="Execution adapter" data-body="Either a human following the on-screen instruction, or a MuJoCo Panda agent.|In simulation, Gemma 4 compiles the instruction into a constrained pick-and-place program, SAM 3.1 segments source and target, depth grounds both in 3D, and an IK controller executes safe waypoints.">
+          <rect x="780" y="200" width="160" height="66"/><text class="t" x="794" y="228">Execution adapter</text><text class="s" x="794" y="247">human or MuJoCo</text></g>
+        <g class="node data" data-title="Scene" data-body="The physical tabletop, or its MuJoCo simulation with a fixed monitoring camera.">
+          <rect x="490" y="320" width="232" height="64"/><text class="t" x="504" y="347">Physical or MuJoCo scene</text><text class="s" x="504" y="366">what the cameras observe</text></g>
+      </svg></div>
+      <aside class="diagram-note" aria-live="polite">
+        <h4>Models propose, the host decides</h4>
+        <p>Blue components call a model and return typed results. Purple components are deterministic code that owns goal identity and every state change.</p>
+        <p class="hint">Hover, tab to or tap a component.</p>
+      </aside>
+    </div>
+    <ul class="legend" aria-label="Diagram key">
+      <li class="human"><i></i>People</li><li class="agent"><i></i>Model-facing agent</li><li class="host"><i></i>Deterministic host</li><li class="data"><i></i>Data and surfaces</li>
+    </ul>
+  </section>
+
+  <section class="block" aria-labelledby="loop-h">
+    <h2 id="loop-h">From request to verified completion</h2>
+    <p class="intro">Execution never starts on a guess, and the robot never declares success on its own say-so.</p>
+    <div class="diagram" data-diagram>
+      <p class="canvas-hint">Swipe sideways to see the whole diagram.</p>
+      <div class="canvas"><svg viewBox="0 0 960 390" role="group" aria-label="PrefMem workflow. Select a step for details.">
+        <defs>
+          <marker id="la" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path class="arrowhead" d="M0,0 L10,5 L0,10 z"/></marker>
+          <marker id="ls" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path class="arrowhead stop" d="M0,0 L10,5 L0,10 z"/></marker>
+        </defs>
+        <path class="edge" d="M185,50 H211" marker-end="url(#la)"/>
+        <path class="edge" d="M380,50 H406" marker-end="url(#la)"/>
+        <path class="edge" d="M575,50 H601" marker-end="url(#la)"/>
+        <rect class="group" x="20" y="118" width="728" height="172"/>
+        <text class="glabel" x="100" y="140">Receding-horizon loop, execution horizon of one</text>
+        <path class="edge" d="M692,80 V100 H80 V166" marker-end="url(#la)"/>
+        <path class="edge" d="M195,198 H221" marker-end="url(#la)"/>
+        <path class="edge" d="M380,198 H406" marker-end="url(#la)"/>
+        <path class="edge" d="M565,198 H591" marker-end="url(#la)"/>
+        <path class="edge" d="M662,226 V262 H117 V230" marker-end="url(#la)"/>
+        <text class="elabel" x="300" y="278">replan from the new state</text>
+        <path class="edge" d="M160,170 V152 H857 V166" marker-end="url(#la)"/>
+        <text class="elabel" x="770" y="146">final check</text>
+        <path class="edge" d="M857,226 V256" marker-end="url(#la)"/>
+        <path class="edge dash" d="M775,212 H734" marker-end="url(#la)"/>
+        <text class="elabel" x="740" y="250">incomplete</text>
+        <path class="edge dash" d="M335,290 V316" marker-end="url(#la)"/>
+        <path class="edge stop" d="M615,290 V316" marker-end="url(#ls)"/>
+
+        <g class="node agent" data-title="Clarify intent" data-body="The HRI Agent sees the message, a current frame and the runtime state. It asks one focused clarification only when the requested outcome or a constraint is ambiguous, and uses scoped preferences to fill omissions.">
+          <rect x="20" y="20" width="165" height="60"/><text class="t" x="34" y="45">Clarify intent</text><text class="s" x="34" y="64">one focused question</text></g>
+        <g class="node agent" data-title="Preview" data-body="With intent clear, the runtime captures a fresh frame and asks the stateless Planner for a non-executable preview: the precise goal, constraints, expected final observations and, when ready, a nominal outline.">
+          <rect x="215" y="20" width="165" height="60"/><text class="t" x="229" y="45">Preview</text><text class="s" x="229" y="64">non-executable plan</text></g>
+        <g class="node human" data-title="Confirm the goal" data-body="Execution starts only after the user confirms the exact staged goal ID and revision. Anything else goes back to the HRI Agent.">
+          <rect x="410" y="20" width="165" height="60"/><text class="t" x="424" y="45">Confirm the goal</text><text class="s" x="424" y="64">exact ID and revision</text></g>
+        <g class="node host" data-title="Freeze goal and checklist" data-body="The Validator compiles a detailed visual checklist against a confirmation frame. The goal and checklist are then frozen for the run. The preview is not frozen as an action queue.">
+          <rect x="605" y="20" width="175" height="60"/><text class="t" x="619" y="45">Freeze goal</text><text class="s" x="619" y="64">and visual checklist</text></g>
+        <g class="node agent" data-title="Plan the next step" data-body="Every cycle, the Planner gets a fresh frame, the frozen goal, the terminal history and any operator guidance, and returns one to three candidate tasks. Only the first is published.">
+          <rect x="40" y="170" width="155" height="56"/><text class="t" x="54" y="194">Plan next step</text><text class="s" x="54" y="212">publish 1 of up to 3</text></g>
+        <g class="node host" data-title="Publish and execute" data-body="The single instruction is shown to a human on the camera page, or sent to the MuJoCo Panda executor.">
+          <rect x="225" y="170" width="155" height="56"/><text class="t" x="239" y="194">Execute</text><text class="s" x="239" y="212">human or MuJoCo</text></g>
+        <g class="node agent" data-title="Monitor" data-body="The Monitor decides whether the published task succeeded or failed. Only temporally stable results count; ongoing or unstable results keep it watching.">
+          <rect x="410" y="170" width="155" height="56"/><text class="t" x="424" y="194">Monitor</text><text class="s" x="424" y="212">stable result only</text></g>
+        <g class="node host" data-title="Append history" data-body="Stable terminal results become trusted records, and the loop replans from the new state. Cycle and failure guards watch this history.">
+          <rect x="595" y="170" width="135" height="56"/><text class="t" x="609" y="194">History</text><text class="s" x="609" y="212">trusted records</text></g>
+        <g class="node agent" data-title="Final validation" data-body="When the Planner asks for a final check, the Validator evaluates the frozen checklist over one or more fresh views. Host code derives COMPLETE, INCOMPLETE or NEEDS_EVIDENCE.|Missing evidence asks the operator to move only the camera; incomplete work is replanned.">
+          <rect x="775" y="170" width="165" height="56"/><text class="t" x="789" y="194">Final validation</text><text class="s" x="789" y="212">frozen checklist</text></g>
+        <g class="node terminal" data-title="Complete" data-body="The goal is reported complete only when stable visual evidence satisfies the frozen checklist.">
+          <rect x="775" y="260" width="165" height="44"/><text class="t" x="789" y="287">COMPLETE</text></g>
+        <g class="node decide" data-title="Needs attention" data-body="Model or service errors, no-progress timeouts, Planner questions or blockers, and loop guards enter NEEDS_ATTENTION.|The HRI Agent explains the exact reason, then resumes the current task or replans with guidance.">
+          <rect x="225" y="320" width="220" height="56"/><text class="t" x="239" y="344">Needs attention</text><text class="s" x="239" y="362">explain, resume or replan</text></g>
+        <g class="node safety" data-title="Emergency stopped" data-body="A visual emergency from the Monitor or Validator, or the operator's software stop, latches the terminal EMERGENCY_STOPPED state through one shared coordinator.">
+          <rect x="500" y="320" width="230" height="56"/><text class="t" x="514" y="344">Emergency stopped</text><text class="s" x="514" y="362">latched, from vision or GUI</text></g>
+      </svg></div>
+      <aside class="diagram-note" aria-live="polite">
+        <h4>Confirm first, verify last</h4>
+        <p>The user confirms an exact goal before anything moves, and an independent Validator checks a frozen checklist before anything is called complete.</p>
+        <p class="hint">Hover, tab to or tap a step.</p>
+      </aside>
+    </div>
+    <ul class="legend" aria-label="Diagram key">
+      <li class="human"><i></i>People</li><li class="agent"><i></i>Model-facing agent</li><li class="host"><i></i>Deterministic host</li><li class="decide"><i></i>Attention</li><li class="safety"><i></i>Safety</li>
+    </ul>
+  </section>
+
+  <section class="block" aria-labelledby="res-h">
+    <h2 id="res-h">Results</h2>
+    <p class="intro">Development, non-confirmatory experiments in a restricted tabletop domain. Each row pairs a PrefMem component with a control that removes it.</p>
+
+    <div class="chart" id="ablations">
+      <div class="legend-row" aria-hidden="true"><span><i class="sw" style="background:var(--series-control)"></i>Control (component removed)</span><span><i class="sw" style="background:var(--series-prefmem)"></i>PrefMem</span></div>
+      <div class="row"><div class="q">Goal resolved without asking<small>one applicable preference; empty vs populated memory</small></div>
+        <div class="bars">
+          <div class="bar-line"><div class="track"><div class="fill control" style="width:0%"></div><span class="hit" tabindex="0" data-tip="Empty memory|0 of 36 observations resolved the goal without a question."></span></div><span class="val">0/36</span></div>
+          <div class="bar-line"><div class="track"><div class="fill prefmem" style="width:100%"></div><span class="hit" tabindex="0" data-tip="Scoped memory|36 of 36 observations resolved the goal without a question. Both conditions reached the correct goal within two turns."></span></div><span class="val">36/36</span></div>
+        </div></div>
+      <div class="row"><div class="q">Recovered after a stable failure<small>frozen action queue vs fresh replanning</small></div>
+        <div class="bars">
+          <div class="bar-line"><div class="track"><div class="fill control" style="width:0%"></div><span class="hit" tabindex="0" data-tip="Frozen action queue|0 of 40 deterministic traces recovered."></span></div><span class="val">0/40</span></div>
+          <div class="bar-line"><div class="track"><div class="fill prefmem" style="width:100%"></div><span class="hit" tabindex="0" data-tip="Fresh replanning|40 of 40 deterministic traces recovered. Planner outputs were fixtures, so this tests the host policy, not learned planning."></span></div><span class="val">40/40</span></div>
+        </div></div>
+      <div class="row"><div class="q">Expected route with the Monitor<small>control never claims visual progress</small></div>
+        <div class="bars">
+          <div class="bar-line"><div class="track"><div class="fill control" style="width:33.3%"></div><span class="hit" tabindex="0" data-tip="No visual Monitor|12 of 36 paired observations followed the expected host route."></span></div><span class="val">12/36</span></div>
+          <div class="bar-line"><div class="track"><div class="fill prefmem" style="width:61.1%"></div><span class="hit" tabindex="0" data-tip="Production Monitor|22 of 36: +27.8 percentage points, cluster-bootstrap 95% interval +8.3 to +50.0."></span></div><span class="val">22/36</span></div>
+        </div></div>
+      <div class="row"><div class="q">Correction requested when work is visibly incomplete<small>stop after actions vs Validator</small></div>
+        <div class="bars">
+          <div class="bar-line"><div class="track"><div class="fill control" style="width:0%"></div><span class="hit" tabindex="0" data-tip="Stop after actions|0 of 21: the control falsely declared all 21 incomplete states complete."></span></div><span class="val">0/21</span></div>
+          <div class="bar-line"><div class="track"><div class="fill prefmem" style="width:100%"></div><span class="hit" tabindex="0" data-tip="Production Validator|21 of 21 incomplete states sent back for correction, with zero false completions."></span></div><span class="val">21/21</span></div>
+        </div></div>
+      <div class="row"><div class="q">Complete states accepted<small>the Validator's cost: false rejections</small></div>
+        <div class="bars">
+          <div class="bar-line"><div class="track"><div class="fill control" style="width:100%"></div><span class="hit" tabindex="0" data-tip="Stop after actions|15 of 15 genuinely complete states finalised."></span></div><span class="val">15/15</span></div>
+          <div class="bar-line"><div class="track"><div class="fill prefmem" style="width:93.3%"></div><span class="hit" tabindex="0" data-tip="Production Validator|14 of 15 finalised: one false rejection, the price of the completion gate."></span></div><span class="val">14/15</span></div>
+        </div></div>
+      <div class="tip" role="tooltip"></div>
+      <details class="table-toggle"><summary>Show as a table</summary>
+        <table><thead><tr><th>Measure</th><th>Control</th><th>PrefMem</th></tr></thead><tbody>
+          <tr><td>Goal resolved without asking (EXP-01)</td><td>0/36</td><td>36/36</td></tr>
+          <tr><td>Recovered after a stable failure</td><td>0/40</td><td>40/40</td></tr>
+          <tr><td>Expected route with the Monitor (EXP-06)</td><td>12/36</td><td>22/36</td></tr>
+          <tr><td>Correction requested, incomplete states (EXP-07)</td><td>0/21</td><td>21/21</td></tr>
+          <tr><td>Complete states accepted (EXP-07)</td><td>15/15</td><td>14/15</td></tr>
+        </tbody></table></details>
+    </div>
+
+    <h3 style="font-size:24px;margin:44px 0 6px">End to end in MuJoCo</h3>
+    <p class="muted" style="max-width:66ch;font-size:17px">Twelve simulated episodes, scored at four stages from goal to fully strict execution. All twelve reached the physical goal; the three Validator misses were low-contrast scenes it rejected even though the cube was placed correctly.</p>
+    <div class="chart" id="funnel">
+      <div class="row"><div class="q">Correct contract and physical goal</div><div class="bars"><div class="bar-line"><div class="track"><div class="fill prefmem" style="width:100%"></div><span class="hit" tabindex="0" data-tip="12 of 12|Correct goal contract and simulator-truth physical goal."></span></div><span class="val">12/12</span></div></div></div>
+      <div class="row"><div class="q">All grounding strict</div><div class="bars"><div class="bar-line"><div class="track"><div class="fill prefmem" style="width:91.7%"></div><span class="hit" tabindex="0" data-tip="11 of 12|Every grounding step passed without assistance."></span></div><span class="val">11/12</span></div></div></div>
+      <div class="row"><div class="q">Validator confirmed completion</div><div class="bars"><div class="bar-line"><div class="track"><div class="fill prefmem" style="width:75%"></div><span class="hit" tabindex="0" data-tip="9 of 12|The Validator declared the goal complete."></span></div><span class="val">9/12</span></div></div></div>
+      <div class="row"><div class="q">Exact one-action strict chain</div><div class="bars"><div class="bar-line"><div class="track"><div class="fill prefmem" style="width:66.7%"></div><span class="hit" tabindex="0" data-tip="8 of 12|The whole chain ran strictly with exactly one action."></span></div><span class="val">8/12</span></div></div></div>
+      <div class="tip" role="tooltip"></div>
+    </div>
+
+    <div class="callout"><b>Limitation I'm taking forward.</b> Across 30 interactions with related edits, a focal preference was still recalled at the end in only 2 of 8 memory stores: free-text identity let the system rewrite the wrong record. It points to immutable, structured keys for user, task, preference dimension and provenance.</div>
+  </section>
+</main>
+
+<footer class="site-foot">
+  <div class="wrap">
+    <span>Yuxin Liu, London. Updated November 2026.</span>
+    <span><a href="mailto:slyx361@outlook.com">Email</a>&nbsp;&nbsp; <a href="https://github.com/KasLoot">GitHub</a>&nbsp;&nbsp; <a href="https://www.linkedin.com/in/yuxin-liu-a08b32296/">LinkedIn</a></span>
+  </div>
+</footer>
+<script src="../assets/js/site.js" defer></script>
+</body>
+</html>

@@ -1,0 +1,25 @@
+name = "robobrain-demo"
+main = "src/index.js"
+compatibility_date = "2026-11-01"
+
+[vars]
+# The sites allowed to call this Worker (comma-separated, no trailing slash).
+ALLOWED_ORIGINS = "https://kasloot.github.io,http://localhost:8000"
+OPENAI_MODEL = "gpt-6.1-terra"
+# Daily limits, counted per visitor IP and for the whole site. Needs the QUOTA KV namespace below.
+RUNS_PER_IP_PER_DAY = "3"
+RUNS_PER_DAY = "40"
+# Reasoning effort sent to the model ("" to omit). Unsupported values are dropped automatically.
+BUILDER_REASONING = "medium"
+MONITOR_REASONING = "low"
+TICKET_MINUTES = "20"
+
+# Secrets (set with `npx wrangler secret put NAME`, never written in this file):
+#   OPENAI_API_KEY    - key from a dedicated OpenAI project with a hard spend limit
+#   TICKET_SECRET     - any long random string
+#   TURNSTILE_SECRET  - optional; enables the Cloudflare Turnstile bot check
+
+# Create with `npx wrangler kv namespace create QUOTA`, then paste the id here.
+# [[kv_namespaces]]
+# binding = "QUOTA"
+# id = "PASTE_THE_ID_HERE"
