@@ -6,6 +6,8 @@ Static site for GitHub Pages, plus one small Cloudflare Worker that powers the R
 index.html            Home: research, projects, publications, experience
 robobrain/index.html  RoboBrain project page, architecture diagram, Try now
 prefmem/index.html    PrefMem project page, diagrams, results
+zh/                   Simplified Chinese pages (generated, see below)
+tools/build_zh.py     Builds zh/ from the English pages
 config.js             Demo settings (Worker URL, model)
 assets/               CSS, JS, self-hosted fonts, images, videos, replay keyframes, CV
 worker/               Cloudflare Worker that keeps the OpenAI key secret
@@ -75,5 +77,15 @@ In the Cloudflare dashboard, open **Turnstile**, add a widget for `kasloot.githu
 - Text: edit the HTML files directly.
 - Model: change `OPENAI_MODEL` in `wrangler.toml` (then `npx wrangler deploy`) and `model` in `config.js`.
 - Replay clips: `assets/js/rb-data.js`, `assets/replay/` and `worker/src/frames.js` are generated together from the masked keyframes. Regenerate all three if you change the clips; raw clips without the burned-in overlay would remove the need for masks.
+
+## Chinese version
+
+The pages in `zh/` are generated from the English pages, so don't edit them by hand.
+
+1. Edit the English page.
+2. In `tools/build_zh.py`, update the Chinese text next to the English sentence you changed (or add a new pair).
+3. Run `python3 tools/build_zh.py` from the repository root.
+
+If an English sentence has no translation, the script stops and names it, so the two languages can't drift apart. It also lists any English left in the Chinese pages. The demo's interface text lives in `assets/js/trynow-i18n.js`.
 
 Fonts: Newsreader and Inter, self-hosted under the SIL Open Font License (see `assets/fonts`).

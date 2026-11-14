@@ -1,0 +1,214 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>RoboBrain — Yuxin Liu</title>
+<meta name="description" content="RoboBrain：面向机器人任务的实时闭环监控系统。用一段描述生成自己的监控方案，并在实时运行录像上回放。">
+<meta property="og:title" content="RoboBrain — 机器人任务的实时监控">
+<meta property="og:description" content="由多个视觉语言模型“专家”检查、轮次验证与进度跟踪。在实时运行录像上试一试。">
+<meta property="og:image" content="https://kasloot.github.io/assets/img/og.jpg">
+<meta property="og:locale" content="zh_CN">
+<link rel="alternate" hreflang="en" href="https://kasloot.github.io/robobrain/">
+<link rel="alternate" hreflang="zh-CN" href="https://kasloot.github.io/zh/robobrain/">
+<link rel="alternate" hreflang="x-default" href="https://kasloot.github.io/robobrain/">
+<link rel="icon" href="../../assets/img/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="../../assets/css/site.css">
+<script src="../../config.js"></script>
+</head>
+<body>
+<a class="skip" href="#main">跳到正文</a>
+<header class="site-head">
+  <div class="wrap">
+    <a class="home" href="../">Yuxin Liu</a>
+    <nav aria-label="主导航">
+      <a href="../#research">研究</a>
+      <a href="../#projects" aria-current="page">项目</a>
+      <a href="../#publications">论文</a>
+      <a href="../#experience">经历</a>
+      <a href="../../assets/docs/Yuxin_Liu_CV.pdf">简历</a>
+      <a class="lang" href="../../robobrain/" lang="en" hreflang="en">English</a>
+    </nav>
+  </div>
+</header>
+
+<main id="main" class="wrap">
+  <header class="page-head">
+    <p class="crumb"><a href="../#projects">项目</a> / RoboBrain</p>
+    <h1>RoboBrain</h1>
+    <p class="deck">一个闭环监控系统：观察机器人工作，实时报告任务是在正常进行、已经完成还是失败，以及原因。</p>
+    <ul class="links">
+      <li><a class="btn primary" href="#try">在实时运行录像上试一试</a></li>
+      <li><a class="btn" href="https://github.com/KasLoot/RoboBrain">GitHub 上的代码</a></li>
+    </ul>
+    <div class="stat-row">
+      <div><b>197 / 198</b><span>三个插头插入数据集上，回合结果判断正确（104/105、45/45、48/48）</span></div>
+      <div><b>10–15 Hz</b><span>在单块 RTX Pro 6000 上使用 Gemma 4 26B A4B 实时监控</span></div>
+      <div><b>一段描述</b><span>就足以让任务构建器起草所有“专家”和进度阶段</span></div>
+    </div>
+  </header>
+
+  <section class="block" aria-labelledby="runs-h">
+    <h2 id="runs-h">两段实时运行录像</h2>
+    <p class="intro">两段视频上的叠加信息都是 RoboBrain 在运行中的真实输出。在持续监控模式下，状态会重新进入监控：失败被排除、任务重新开始后，状态会回到 ON_GOING。</p>
+    <div class="videos">
+      <figure>
+        <video src="../../assets/video/plug.mp4" poster="../../assets/video/plug-poster.jpg" controls muted playsinline preload="metadata"></video>
+        <figcaption><b>插头插入，视频加速约 4 倍</b>RoboBrain 实时监控；录像经过加速，便于看清状态变化。机械臂三次尝试插入 USB 插头；第二次时插头在夹爪中发生旋转，RoboBrain 依据可见证据标记 ROTATED_OR_MISALIGNED。</figcaption>
+      </figure>
+      <figure>
+        <video src="../../assets/video/sort.mp4" poster="../../assets/video/sort-poster.jpg" controls muted playsinline preload="metadata"></video>
+        <figcaption><b>砖块和线缆分拣，原速</b>一个人把砖块放进盒子、把线缆放到垫子上。进度按已分拣的组数计算，放错位置的物品会触发 WRONG_POSITIONING。</figcaption>
+      </figure>
+    </div>
+    <dl class="overlay-key">
+      <dt>状态</dt><dd>ON_GOING、SUCCESS 或 FAIL，只在验证后才判定。</dd>
+      <dt>失败类型</dt><dd>由哪个失败“专家”确认了问题，并附上一句话的证据。</dd>
+      <dt>进度</dt><dd>已确认的进度阶段；新阶段仍在确认时显示“Last known”（上次已知）。</dd>
+      <dt>证据</dt><dd>该阶段是已确认还是待确认，以及证据的时效。</dd>
+    </dl>
+  </section>
+
+  <section class="block" aria-labelledby="how-h">
+    <h2 id="how-h">工作原理</h2>
+    <p class="intro">RoboBrain 把判断拆成一个个具体的问题。每个“专家”只回答关于当前画面的一个问题，由确定性代码决定这些答案意味着什么。</p>
+    <div class="diagram" data-diagram>
+      <p class="canvas-hint">左右滑动查看完整图示。</p>
+      <div class="canvas"><svg viewBox="0 0 960 420" role="group" aria-label="RoboBrain 架构。选择一个步骤查看详情。">
+        <defs>
+          <marker id="ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path class="arrowhead" d="M0,0 L10,5 L0,10 z"/></marker>
+        </defs>
+        <text class="glabel" x="20" y="12">配置，每个任务一次</text>
+        <path class="edge" d="M210,51 H256" marker-end="url(#ah)"/>
+        <path class="edge" d="M460,51 H506" marker-end="url(#ah)"/>
+        <path class="edge" d="M710,51 H756" marker-end="url(#ah)"/>
+        <path class="edge dash" d="M850,82 V116 H360 V146" marker-end="url(#ah)"/>
+        <text class="elabel" x="560" y="110">生成配置</text>
+        <rect class="group" x="246" y="150" width="228" height="258"/>
+        <text class="glabel" x="20" y="148">持续监控</text>
+        <path class="edge" d="M210,250 H235 V203 H256" marker-end="url(#ah)"/>
+        <path class="edge" d="M210,282 H235 V358 H256" marker-end="url(#ah)"/>
+        <path class="edge" d="M460,203 H506" marker-end="url(#ah)"/>
+        <path class="edge" d="M710,203 H756" marker-end="url(#ah)"/>
+        <path class="edge" d="M850,241 V316" marker-end="url(#ah)"/>
+        <path class="edge" d="M460,358 H506" marker-end="url(#ah)"/>
+        <path class="edge" d="M710,358 H756" marker-end="url(#ah)"/>
+
+        <g class="node human" data-title="任务描述" data-body="用自然语言描述成功是什么样子、哪些失败需要关注。|附上场景照片，让构建器看到目标物体和干扰物。">
+          <rect x="20" y="20" width="190" height="62"/><text class="t" x="34" y="45">任务描述</text><text class="s" x="34" y="64">附场景照片</text></g>
+        <g class="node agent" data-title="任务构建器" data-body="一个独立的大语言模型（默认是 Ollama Cloud 上的 Kimi K3）把对话转化为任务草稿：一个覆盖所有完成条件的成功“专家”，每种需要检测的失败对应一个“专家”，以及可选的进度阶段。|它的系统提示词禁止凭空编造失败、物体数量、相机或阈值，并要求写出具体、考虑遮挡、小型监控模型也能遵循的提示词。">
+          <rect x="260" y="20" width="200" height="62"/><text class="t" x="274" y="45">任务构建器</text><text class="s" x="274" y="64">由大语言模型起草配置</text></g>
+        <g class="node host" data-title="校验后的草稿" data-body="草稿在本地按严格的 schema 和 RoboBrain 自身规则校验：最多一个成功“专家”、名称互不重复、只能使用真实的相机源和获准的参考图像。|校验失败时，构建器会带着校验错误获得唯一一次修复机会。无效草稿永远不会变成任务。">
+          <rect x="510" y="20" width="200" height="62"/><text class="t" x="524" y="45">校验后的草稿</text><text class="s" x="524" y="64">“专家” + 进度阶段</text></g>
+        <g class="node human" data-title="审阅并创建" data-body="在你读过生成的提示词之前，什么都不会运行。创建任务前，你可以修改名称、提示词、失败类型、相机和参考图像。">
+          <rect x="760" y="20" width="180" height="62"/><text class="t" x="774" y="45">审阅并创建</text><text class="s" x="774" y="64">修改后保存任务</text></g>
+
+        <g class="node data" data-title="相机源" data-body="每台物理相机只打开一次，以 30 fps 写入共享缓冲区，与模型延迟无关。|一个任务可以使用一到两个视角，也可以用录制好的视频代替相机来回放一次运行。">
+          <rect x="20" y="228" width="190" height="76"/><text class="t" x="34" y="253">相机源</text><text class="s" x="34" y="272">1–2 个视角，30 fps</text><text class="s" x="34" y="289">共享帧缓冲区</text></g>
+        <g class="node agent" data-title="结果“专家”" data-body="每个“专家”针对最新画面提出一个具体问题，必须回答 POSITIVE、NEGATIVE 或 UNCERTAIN，并附一句可见证据。|所有“专家”并行运行，关闭思考模式，温度为零。上一批返回后，新一批立即开始。">
+          <rect x="260" y="165" width="200" height="76"/><text class="t" x="274" y="190">结果“专家”</text><text class="s" x="274" y="209">1 个成功 + 若干失败检查</text><text class="s" x="274" y="226">每批并行调用 VLM</text></g>
+        <g class="node host" data-title="验证轮次" data-body="单个肯定回答不会直接改变状态，而是触发一轮验证：每个“专家”在一秒内观察十次，总共三十次请求。|只有获得超过五票肯定，该“专家”的判断才会被确认。验证期间常规监控照常进行，验证轮次不会重叠或排队。">
+          <rect x="510" y="165" width="200" height="76"/><text class="t" x="524" y="190">验证轮次</text><text class="s" x="524" y="209">1 秒内 10 帧</text><text class="s" x="524" y="226">超过 5 票肯定</text></g>
+        <g class="node decide" data-title="判定" data-body="只有成功被确认时为 SUCCESS，只有失败被确认时为 FAIL；两者冲突或证据不足时保持 ON_GOING。请求出错一律算作 UNCERTAIN，绝不当作证据。|在持续监控模式下，结果会重新进入监控：事件消失后，状态回到 ON_GOING。">
+          <rect x="760" y="165" width="180" height="76"/><text class="t" x="774" y="190">判定</text><text class="s" x="774" y="209">SUCCESS 或 FAIL</text><text class="s" x="774" y="226">冲突时为 ON_GOING</text></g>
+        <g class="node agent" data-title="进度观察器" data-body="一个独立的工作进程，每次只发一个请求，选出与场景相符的预定义进度阶段，或返回 UNKNOWN。|它从不判定 SUCCESS 或 FAIL，这仍由结果“专家”负责。">
+          <rect x="260" y="320" width="200" height="76"/><text class="t" x="274" y="345">进度观察器</text><text class="s" x="274" y="364">一个阶段，或 UNKNOWN</text><text class="s" x="274" y="381">从不判定结果</text></g>
+        <g class="node host" data-title="进度跟踪器" data-body="连续两次新的观察一致后，一个阶段才会被确认；重复的帧不会重复计数。|待确认、未知或过时的结果会保留上一个已确认阶段，并在屏幕上注明。">
+          <rect x="510" y="320" width="200" height="76"/><text class="t" x="524" y="345">进度跟踪器</text><text class="s" x="524" y="364">连续 2 次一致即确认</text><text class="s" x="524" y="381">标记过时的证据</text></g>
+        <g class="node data" data-title="实时叠加信息与记录" data-body="实时画面和录像使用同一套叠加信息：状态、失败类型、进度和证据时效。|开启录制后，每次运行都会保存带标注的 H.264 视频、记录每次请求与响应的 JSON-lines 事件日志，以及一份可读的 JSON 报告。">
+          <rect x="760" y="320" width="180" height="76"/><text class="t" x="774" y="345">实时叠加信息</text><text class="s" x="774" y="364">状态、失败、进度</text><text class="s" x="774" y="381">视频、日志和报告</text></g>
+      </svg></div>
+      <aside class="diagram-note" aria-live="polite">
+        <h4>为什么要把判断拆开</h4>
+        <p>蓝色步骤是模型调用，紫色步骤是确定性代码，因此任何单个模型回答都无法独自改变状态。</p>
+        <p class="hint">悬停、按 Tab 或点按步骤，查看它的作用。</p>
+      </aside>
+    </div>
+    <ul class="legend" aria-label="图例">
+      <li class="human"><i></i>你</li><li class="agent"><i></i>模型调用</li><li class="host"><i></i>确定性代码</li><li class="data"><i></i>数据与输出</li><li class="decide"><i></i>判定</li>
+    </ul>
+  </section>
+
+  <section class="block" id="try" aria-labelledby="try-h">
+    <h2 id="try-h">试一试</h2>
+    <p class="intro">为其中一段实时运行录像描述一个监控任务。RoboBrain 自己的任务构建器提示词会写出各个“专家”，随后回放这段视频，由你的监控方案逐个关键帧进行判断。之后你还可以与原始运行对比。</p>
+
+    <div class="console" id="trynow">
+      <div class="c-head"><span class="mark" aria-hidden="true">R</span><strong>RoboBrain</strong><span class="badge">任务构建器：<span id="tn-model">gpt-6.1-terra</span></span></div>
+      <div class="c-grid">
+        <div class="c-card">
+          <div class="c-card-head"><h3>描述任务</h3></div>
+          <fieldset class="clip-pick">
+            <legend>回放视频</legend>
+            <label><input type="radio" name="tn-clip" value="plug" checked><img src="../../assets/replay/plug/k01.jpg" alt="">插头插入<small>20 秒，加速 4 倍；10 个关键帧</small></label>
+            <label><input type="radio" name="tn-clip" value="sort"><img src="../../assets/replay/sort/k01.jpg" alt="">砖块和线缆分拣<small>54 秒；12 个关键帧</small></label>
+          </fieldset>
+          <label>你的描述
+            <textarea id="tn-task" maxlength="1500" rows="7"></textarea></label>
+          <span class="hint" id="tn-count"></span>
+          <fieldset class="key-mode">
+            <legend>OpenAI 访问方式</legend>
+            <label class="opt"><input type="radio" name="tn-mode" value="demo"><span>使用演示密钥<small id="tn-demo-note">正在检查……</small></span></label>
+            <label class="opt"><input type="radio" name="tn-mode" value="own" checked><span>使用我自己的 OpenAI 密钥<small>密钥从你的浏览器直接发送给 OpenAI，只保存在当前标签页中。完整运行一次约花费 5–10 美分。</small></span></label>
+            <label id="tn-key-wrap">OpenAI API 密钥<input type="password" id="tn-key" autocomplete="off" spellcheck="false" placeholder="sk-…"></label>
+          </fieldset>
+          <div id="tn-turnstile" hidden></div>
+          <div class="actions" style="margin-top:16px"><button class="primary" id="tn-generate" type="button">生成监控方案</button><span id="tn-gen-status" aria-live="polite"></span></div>
+          <div id="tn-gen-msg"></div>
+        </div>
+        <div class="c-card">
+          <div class="c-card-head"><h3>任务预览</h3><span class="badge" id="tn-draft-badge">草稿</span></div>
+          <div id="tn-preview-body"></div>
+          <div class="actions" style="margin-top:14px"><button class="primary" id="tn-run" type="button" disabled>运行回放</button><span class="hint" id="tn-run-note"></span></div>
+        </div>
+      </div>
+
+      <div class="replay" id="tn-replay" hidden>
+        <div class="c-card operating">
+          <div>
+            <div class="lbl">运行状态</div>
+            <div class="big" id="tn-status" data-status="ON_GOING" aria-live="polite">ON_GOING</div>
+            <p id="tn-failure">失败类型：NONE</p>
+            <p id="tn-detail">等待第一个关键帧</p>
+          </div>
+          <div class="actions">
+            <div class="view-toggle" role="group" aria-label="视频视图">
+              <button type="button" id="tn-view-mine" aria-pressed="true">你的监控方案</button>
+              <button type="button" id="tn-view-orig" aria-pressed="false">原始运行</button>
+            </div>
+            <button type="button" id="tn-replay-btn">重新播放</button>
+          </div>
+        </div>
+        <div class="stage-grid">
+          <div>
+            <div class="stage" id="tn-stage"><video id="tn-video" muted playsinline preload="auto"></video></div>
+            <p class="hint" id="tn-orig-note" hidden></p>
+            <div class="strip" id="tn-strip" aria-label="关键帧"></div>
+          </div>
+          <div>
+            <div class="c-card prog-panel" id="tn-prog"></div>
+            <p class="hint" style="margin:16px 0 0">本次回放与实时 RoboBrain 的区别：</p>
+            <ul class="notes" id="tn-notes"></ul>
+          </div>
+        </div>
+        <div class="c-card obs-wrap">
+          <details><summary><h3>全部模型回答</h3><span class="hint" id="tn-obs-count"></span></summary>
+          <table class="obs"><thead><tr><th>关键帧</th><th>“专家”</th><th>判断</th><th>可见证据</th></tr></thead><tbody id="tn-obs"></tbody></table>
+          </details>
+        </div>
+      </div>
+      <noscript><p>演示需要 JavaScript。上方的实时运行录像展示的是 RoboBrain 自己的输出。</p></noscript>
+    </div>
+  </section>
+</main>
+
+<footer class="site-foot">
+  <div class="wrap">
+    <span>Yuxin Liu，伦敦。更新于 2026 年 11 月。</span>
+    <span><a href="mailto:slyx361@outlook.com">邮箱</a>&nbsp;&nbsp; <a href="https://github.com/KasLoot">GitHub</a>&nbsp;&nbsp; <a href="https://www.linkedin.com/in/yuxin-liu-a08b32296/">LinkedIn</a></span>
+  </div>
+</footer>
+<script src="../../assets/js/site.js" defer></script>
+<script type="module" src="../../assets/js/trynow.js"></script>
+</body>
+</html>

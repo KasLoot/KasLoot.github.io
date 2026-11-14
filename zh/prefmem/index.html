@@ -1,0 +1,239 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>PrefMem — Yuxin Liu</title>
+<meta name="description" content="PrefMem：面向含糊指令的交互式机器人操作，一个具备偏好感知、以证据为门控的智能体系统。UCL 硕士毕业论文。">
+<meta property="og:title" content="PrefMem — 偏好感知、证据门控的机器人智能体">
+<meta property="og:description" content="UCL 硕士毕业论文。置于任意动作执行器之上的智能体层，无需训练。">
+<meta property="og:image" content="https://kasloot.github.io/assets/img/og.jpg">
+<meta property="og:locale" content="zh_CN">
+<link rel="alternate" hreflang="en" href="https://kasloot.github.io/prefmem/">
+<link rel="alternate" hreflang="zh-CN" href="https://kasloot.github.io/zh/prefmem/">
+<link rel="alternate" hreflang="x-default" href="https://kasloot.github.io/prefmem/">
+<link rel="icon" href="../../assets/img/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="../../assets/css/site.css">
+</head>
+<body>
+<a class="skip" href="#main">跳到正文</a>
+<header class="site-head">
+  <div class="wrap">
+    <a class="home" href="../">Yuxin Liu</a>
+    <nav aria-label="主导航">
+      <a href="../#research">研究</a>
+      <a href="../#projects" aria-current="page">项目</a>
+      <a href="../#publications">论文</a>
+      <a href="../#experience">经历</a>
+      <a href="../../assets/docs/Yuxin_Liu_CV.pdf">简历</a>
+      <a class="lang" href="../../prefmem/" lang="en" hreflang="en">English</a>
+    </nav>
+  </div>
+</header>
+
+<main id="main" class="wrap">
+  <header class="page-head">
+    <p class="crumb"><a href="../#projects">项目</a> / PrefMem</p>
+    <h1>PrefMem</h1>
+    <p class="deck">一个具备偏好感知、以证据为门控的智能体层，把含糊的指令转化为经过确认和监控的机器人任务，无需训练新的策略。</p>
+    <p class="meta"><span>UCL 硕士毕业论文，2026</span><span>导师：Dr Valerio Modugno，UCL 智能机器人组</span></p>
+    <ul class="links">
+      <li><a class="btn primary" href="https://github.com/KasLoot/RoboPref">GitHub 上的代码</a></li>
+      <li><a class="btn" href="https://github.com/KasLoot/RoboPref/tree/main/thesis">论文源文件</a></li>
+    </ul>
+    <div class="stat-row">
+      <div><b>0 → 36 / 36</b><span>记忆中有一条适用偏好后，无需提问即可确定的目标数</span></div>
+      <div><b>21 / 21</b><span>被验证器发现的明显未完成状态；动作结束即停止的对照组一个也没发现</span></div>
+      <div><b>12 / 12</b><span>形成正确目标约定并在物理上达成目标的 MuJoCo 回合</span></div>
+    </div>
+  </header>
+
+  <section class="block" aria-labelledby="why-h">
+    <h2 id="why-h">问题所在</h2>
+    <div class="prose">
+      <p>视觉-语言-动作（VLA）模型把语言和相机图像映射为机器人动作，但人的真实意图往往不止于一条指令。当前的 VLA 还倾向于复现训练轨迹，而不是理解新指令的语义，在新环境中的长时程任务上尤为明显。SemanticVLA 和 MeM 等近期方法修改了模型架构、需要重新训练，而且都没有解决理解用户意图的问题。</p>
+      <p>PrefMem 走了另一条路：它不训练新策略，而是在可替换的动作执行器之上加一个编排层。五个与模型交互的智能体分别负责对话、偏好记忆、规划、单步监控和最终验证；确定性运行时与滚动时域控制器则掌管一切不能漂移的内容：目标身份、确认、任务发布、状态转换、证据规则和有界恢复。</p>
+    </div>
+  </section>
+
+  <section class="block" aria-labelledby="arch-h">
+    <h2 id="arch-h">架构</h2>
+    <p class="intro">只有 HRI 智能体与人交流。每个模型都返回带类型的结果，只有宿主程序能改变状态。</p>
+    <div class="diagram" data-diagram>
+      <p class="canvas-hint">左右滑动查看完整图示。</p>
+      <div class="canvas"><svg viewBox="0 0 960 400" role="group" aria-label="PrefMem 架构。选择一个组件查看详情。">
+        <defs>
+          <marker id="pa" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path class="arrowhead" d="M0,0 L10,5 L0,10 z"/></marker>
+        </defs>
+        <path class="edge" d="M194,72 H236" marker-start="url(#pa)" marker-end="url(#pa)"/>
+        <path class="edge" d="M434,72 H486" marker-start="url(#pa)" marker-end="url(#pa)"/>
+        <path class="edge" d="M724,72 H776" marker-start="url(#pa)" marker-end="url(#pa)"/>
+        <path class="edge" d="M335,108 V176" marker-start="url(#pa)" marker-end="url(#pa)"/>
+        <path class="edge" d="M194,212 H236" marker-start="url(#pa)" marker-end="url(#pa)"/>
+        <path class="edge" d="M560,118 V196" marker-start="url(#pa)" marker-end="url(#pa)"/>
+        <text class="elabel" x="570" y="162">类型化状态、最新证据</text>
+        <path class="edge" d="M690,118 V136 H860 V196" marker-end="url(#pa)"/>
+        <text class="elabel" x="752" y="130">当前唯一任务</text>
+        <path class="edge" d="M605,268 V316" marker-start="url(#pa)" marker-end="url(#pa)"/>
+        <path class="edge" d="M860,268 V352 H726" marker-end="url(#pa)"/>
+
+        <g class="node human" data-title="用户或操作员" data-body="人通过 HRI 智能体提出请求、回答澄清问题，并确认确切的目标。|操作员界面也可以随时让机器人停下。">
+          <rect x="20" y="40" width="172" height="64"/><text class="t" x="34" y="67">用户或操作员</text><text class="s" x="34" y="86">请求、回答、停止</text></g>
+        <g class="node agent" data-title="HRI 智能体" data-body="唯一面向用户的智能体。它读取当前相机画面和运行时状态，检索相关偏好，并在结果或约束含糊时提出一个有针对性的问题。|只有用户明确表达今后适用的意图，或对专门的记忆确认问题回答“是”，才会写入偏好。">
+          <rect x="240" y="40" width="192" height="64"/><text class="t" x="254" y="67">HRI 智能体</text><text class="s" x="254" y="86">唯一面向用户的智能体</text></g>
+        <g class="node host" data-title="确定性核心" data-body="PrefMemRuntime 与滚动时域控制器掌管权威目标、任务标识、确认、状态转换、发布、证据规则和循环保护。|模型负责提议，宿主程序负责决定。">
+          <rect x="490" y="30" width="232" height="86"/><text class="t" x="504" y="58">确定性核心</text><text class="s" x="504" y="78">PrefMemRuntime</text><text class="s" x="504" y="96">+ 滚动时域控制器</text></g>
+        <g class="node agent" data-title="规划器、监控器、验证器" data-body="规划器根据最新画面、冻结的目标和历史，提出最多三个下一步任务，只发布第一个。|监控器依据时间上稳定的证据，判断当前任务是否完成。验证器在任何结果被称为完成之前，核对冻结的视觉检查清单。">
+          <rect x="780" y="30" width="160" height="86"/><text class="t" x="794" y="58">规划器</text><text class="t" x="794" y="78">监控器</text><text class="t" x="794" y="98">验证器</text></g>
+        <g class="node data" data-title="偏好存储" data-body="文本记录及其嵌入向量。每条记录都限定于某个用户和任务，只能通过明确的记忆操作修改。">
+          <rect x="20" y="180" width="172" height="64"/><text class="t" x="34" y="207">偏好存储</text><text class="s" x="34" y="226">文本 + 嵌入向量</text></g>
+        <g class="node agent" data-title="记忆智能体" data-body="检索限定于当前用户和任务的偏好，按语义适用性过滤，并返回相关偏好，或经用户同意的修改结果。">
+          <rect x="240" y="180" width="192" height="64"/><text class="t" x="254" y="207">记忆智能体</text><text class="s" x="254" y="226">限定范围的偏好</text></g>
+        <g class="node data" data-title="观察与发布界面" data-body="相机画面作为最新证据输入；任务页面输出当前唯一的一条指令。">
+          <rect x="490" y="200" width="232" height="66"/><text class="t" x="504" y="228">观察界面</text><text class="s" x="504" y="247">相机画面与任务页面</text></g>
+        <g class="node host" data-title="执行适配器" data-body="可以是按屏幕指令操作的人，也可以是 MuJoCo 中的 Panda 智能体。|在仿真中，Gemma 4 把指令编译成受约束的抓取放置程序，SAM 3.1 分割源物体和目标位置，深度信息把两者定位到三维空间，再由 IK 控制器执行安全的路径点。">
+          <rect x="780" y="200" width="160" height="66"/><text class="t" x="794" y="228">执行适配器</text><text class="s" x="794" y="247">人或 MuJoCo</text></g>
+        <g class="node data" data-title="场景" data-body="实体桌面，或带固定监控相机的 MuJoCo 仿真场景。">
+          <rect x="490" y="320" width="232" height="64"/><text class="t" x="504" y="347">实体或 MuJoCo 场景</text><text class="s" x="504" y="366">相机观察的对象</text></g>
+      </svg></div>
+      <aside class="diagram-note" aria-live="polite">
+        <h4>模型提议，宿主决定</h4>
+        <p>蓝色组件调用模型并返回带类型的结果；紫色组件是确定性代码，掌管目标身份和每一次状态变化。</p>
+        <p class="hint">悬停、按 Tab 或点按组件查看详情。</p>
+      </aside>
+    </div>
+    <ul class="legend" aria-label="图例">
+      <li class="human"><i></i>人</li><li class="agent"><i></i>与模型交互的智能体</li><li class="host"><i></i>确定性宿主</li><li class="data"><i></i>数据与界面</li>
+    </ul>
+  </section>
+
+  <section class="block" aria-labelledby="loop-h">
+    <h2 id="loop-h">从请求到验证完成</h2>
+    <p class="intro">执行从不基于猜测开始，机器人也从不凭一己之见宣告成功。</p>
+    <div class="diagram" data-diagram>
+      <p class="canvas-hint">左右滑动查看完整图示。</p>
+      <div class="canvas"><svg viewBox="0 0 960 390" role="group" aria-label="PrefMem 工作流程。选择一个步骤查看详情。">
+        <defs>
+          <marker id="la" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path class="arrowhead" d="M0,0 L10,5 L0,10 z"/></marker>
+          <marker id="ls" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path class="arrowhead stop" d="M0,0 L10,5 L0,10 z"/></marker>
+        </defs>
+        <path class="edge" d="M185,50 H211" marker-end="url(#la)"/>
+        <path class="edge" d="M380,50 H406" marker-end="url(#la)"/>
+        <path class="edge" d="M575,50 H601" marker-end="url(#la)"/>
+        <rect class="group" x="20" y="118" width="728" height="172"/>
+        <text class="glabel" x="100" y="140">滚动时域循环，执行时域为一步</text>
+        <path class="edge" d="M692,80 V100 H80 V166" marker-end="url(#la)"/>
+        <path class="edge" d="M195,198 H221" marker-end="url(#la)"/>
+        <path class="edge" d="M380,198 H406" marker-end="url(#la)"/>
+        <path class="edge" d="M565,198 H591" marker-end="url(#la)"/>
+        <path class="edge" d="M662,226 V262 H117 V230" marker-end="url(#la)"/>
+        <text class="elabel" x="300" y="278">从新状态重新规划</text>
+        <path class="edge" d="M160,170 V152 H857 V166" marker-end="url(#la)"/>
+        <text class="elabel" x="770" y="146">最终检查</text>
+        <path class="edge" d="M857,226 V256" marker-end="url(#la)"/>
+        <path class="edge dash" d="M775,212 H734" marker-end="url(#la)"/>
+        <text class="elabel" x="740" y="250">未完成</text>
+        <path class="edge dash" d="M335,290 V316" marker-end="url(#la)"/>
+        <path class="edge stop" d="M615,290 V316" marker-end="url(#ls)"/>
+
+        <g class="node agent" data-title="澄清意图" data-body="HRI 智能体查看用户消息、当前画面和运行时状态。只有在请求的结果或约束含糊时，才提出一个有针对性的澄清问题，并用限定范围的偏好补全遗漏的信息。">
+          <rect x="20" y="20" width="165" height="60"/><text class="t" x="34" y="45">澄清意图</text><text class="s" x="34" y="64">一个有针对性的问题</text></g>
+        <g class="node agent" data-title="预览" data-body="意图明确后，运行时抓取一帧最新画面，请无状态的规划器给出不可执行的预览：精确目标、约束、预期的最终观察，以及（就绪时）一份名义步骤概要。">
+          <rect x="215" y="20" width="165" height="60"/><text class="t" x="229" y="45">预览</text><text class="s" x="229" y="64">不可执行的计划</text></g>
+        <g class="node human" data-title="确认目标" data-body="只有当用户确认了确切的暂存目标 ID 和版本后，执行才会开始。其他任何回复都会交回 HRI 智能体。">
+          <rect x="410" y="20" width="165" height="60"/><text class="t" x="424" y="45">确认目标</text><text class="s" x="424" y="64">确切的 ID 与版本</text></g>
+        <g class="node host" data-title="冻结目标与检查清单" data-body="验证器对照确认时的画面，生成一份详细的视觉检查清单。随后目标和清单在本次运行中被冻结；预览不会被冻结为动作队列。">
+          <rect x="605" y="20" width="175" height="60"/><text class="t" x="619" y="45">冻结目标</text><text class="s" x="619" y="64">及视觉检查清单</text></g>
+        <g class="node agent" data-title="规划下一步" data-body="每个周期，规划器获得最新画面、冻结的目标、已结束步骤的历史和操作员的指导，返回一到三个候选任务，只发布第一个。">
+          <rect x="40" y="170" width="155" height="56"/><text class="t" x="54" y="194">规划下一步</text><text class="s" x="54" y="212">最多 3 个，发布 1 个</text></g>
+        <g class="node host" data-title="发布并执行" data-body="这一条指令会显示在相机页面上交给人执行，或发送给 MuJoCo 中的 Panda 执行器。">
+          <rect x="225" y="170" width="155" height="56"/><text class="t" x="239" y="194">执行</text><text class="s" x="239" y="212">人或 MuJoCo</text></g>
+        <g class="node agent" data-title="监控" data-body="监控器判断已发布的任务是成功还是失败，只有时间上稳定的结果才算数；进行中或不稳定的结果会让它继续观察。">
+          <rect x="410" y="170" width="155" height="56"/><text class="t" x="424" y="194">监控</text><text class="s" x="424" y="212">只认稳定结果</text></g>
+        <g class="node host" data-title="追加历史" data-body="稳定的终止结果成为可信记录，循环从新状态重新规划。循环与失败保护会监视这段历史。">
+          <rect x="595" y="170" width="135" height="56"/><text class="t" x="609" y="194">历史</text><text class="s" x="609" y="212">可信记录</text></g>
+        <g class="node agent" data-title="最终验证" data-body="当规划器请求最终检查时，验证器在一个或多个最新视角上评估冻结的检查清单，由宿主代码得出 COMPLETE、INCOMPLETE 或 NEEDS_EVIDENCE。|缺少证据时，会请操作员只移动相机；未完成的工作会重新规划。">
+          <rect x="775" y="170" width="165" height="56"/><text class="t" x="789" y="194">最终验证</text><text class="s" x="789" y="212">冻结的检查清单</text></g>
+        <g class="node terminal" data-title="完成" data-body="只有当稳定的视觉证据满足冻结的检查清单时，目标才会被报告为完成。">
+          <rect x="775" y="260" width="165" height="44"/><text class="t" x="789" y="287">COMPLETE</text></g>
+        <g class="node decide" data-title="需要关注" data-body="模型或服务出错、无进展超时、规划器提出问题或遇到阻碍，以及循环保护被触发时，都会进入 NEEDS_ATTENTION。|HRI 智能体会说明确切原因，然后恢复当前任务，或根据指导重新规划。">
+          <rect x="225" y="320" width="220" height="56"/><text class="t" x="239" y="344">需要关注</text><text class="s" x="239" y="362">说明原因，恢复或重新规划</text></g>
+        <g class="node safety" data-title="紧急停止" data-body="监控器或验证器发出的视觉紧急信号，或操作员的软件停止指令，会通过同一个协调器锁定终止状态 EMERGENCY_STOPPED。">
+          <rect x="500" y="320" width="230" height="56"/><text class="t" x="514" y="344">紧急停止</text><text class="s" x="514" y="362">由视觉或界面触发并锁定</text></g>
+      </svg></div>
+      <aside class="diagram-note" aria-live="polite">
+        <h4>先确认，后验证</h4>
+        <p>机器人行动前，用户先确认一个确切的目标；任务被称为完成前，独立的验证器会核对冻结的检查清单。</p>
+        <p class="hint">悬停、按 Tab 或点按步骤查看详情。</p>
+      </aside>
+    </div>
+    <ul class="legend" aria-label="图例">
+      <li class="human"><i></i>人</li><li class="agent"><i></i>与模型交互的智能体</li><li class="host"><i></i>确定性宿主</li><li class="decide"><i></i>需要关注</li><li class="safety"><i></i>安全</li>
+    </ul>
+  </section>
+
+  <section class="block" aria-labelledby="res-h">
+    <h2 id="res-h">结果</h2>
+    <p class="intro">在受限桌面场景中进行的开发性、非验证性实验。每一行都把 PrefMem 的一个组件与去掉该组件的对照组配对比较。</p>
+
+    <div class="chart" id="ablations">
+      <div class="legend-row" aria-hidden="true"><span><i class="sw" style="background:var(--series-control)"></i>对照组（去掉该组件）</span><span><i class="sw" style="background:var(--series-prefmem)"></i>PrefMem</span></div>
+      <div class="row"><div class="q">无需提问即确定目标<small>一条适用偏好；空记忆与已有记忆对比</small></div>
+        <div class="bars">
+          <div class="bar-line"><div class="track"><div class="fill control" style="width:0%"></div><span class="hit" tabindex="0" data-tip="空记忆|36 次观察中有 0 次无需提问即确定目标。"></span></div><span class="val">0/36</span></div>
+          <div class="bar-line"><div class="track"><div class="fill prefmem" style="width:100%"></div><span class="hit" tabindex="0" data-tip="限定范围的记忆|36 次观察全部无需提问即确定目标。两种条件都在两轮对话内达成正确目标。"></span></div><span class="val">36/36</span></div>
+        </div></div>
+      <div class="row"><div class="q">稳定失败后恢复<small>冻结动作队列与重新规划对比</small></div>
+        <div class="bars">
+          <div class="bar-line"><div class="track"><div class="fill control" style="width:0%"></div><span class="hit" tabindex="0" data-tip="冻结动作队列|40 条确定性轨迹中 0 条恢复。"></span></div><span class="val">0/40</span></div>
+          <div class="bar-line"><div class="track"><div class="fill prefmem" style="width:100%"></div><span class="hit" tabindex="0" data-tip="重新规划|40 条确定性轨迹全部恢复。规划器的输出是预设的，因此这里检验的是宿主策略，而不是学到的规划能力。"></span></div><span class="val">40/40</span></div>
+        </div></div>
+      <div class="row"><div class="q">有监控器时的预期路径<small>对照组从不声称有视觉进展</small></div>
+        <div class="bars">
+          <div class="bar-line"><div class="track"><div class="fill control" style="width:33.3%"></div><span class="hit" tabindex="0" data-tip="无视觉监控器|36 次配对观察中有 12 次走了预期的宿主路径。"></span></div><span class="val">12/36</span></div>
+          <div class="bar-line"><div class="track"><div class="fill prefmem" style="width:61.1%"></div><span class="hit" tabindex="0" data-tip="正式监控器|36 次中 22 次：提高 27.8 个百分点，聚类自助法 95% 区间为 +8.3 至 +50.0。"></span></div><span class="val">22/36</span></div>
+        </div></div>
+      <div class="row"><div class="q">工作明显未完成时要求修正<small>动作结束即停止与验证器对比</small></div>
+        <div class="bars">
+          <div class="bar-line"><div class="track"><div class="fill control" style="width:0%"></div><span class="hit" tabindex="0" data-tip="动作结束即停止|21 次中 0 次：对照组把全部 21 个未完成状态误判为完成。"></span></div><span class="val">0/21</span></div>
+          <div class="bar-line"><div class="track"><div class="fill prefmem" style="width:100%"></div><span class="hit" tabindex="0" data-tip="正式验证器|21 个未完成状态全部被退回修正，没有一次误判为完成。"></span></div><span class="val">21/21</span></div>
+        </div></div>
+      <div class="row"><div class="q">接受已完成状态<small>验证器的代价：误拒</small></div>
+        <div class="bars">
+          <div class="bar-line"><div class="track"><div class="fill control" style="width:100%"></div><span class="hit" tabindex="0" data-tip="动作结束即停止|15 个真正完成的状态全部被确认。"></span></div><span class="val">15/15</span></div>
+          <div class="bar-line"><div class="track"><div class="fill prefmem" style="width:93.3%"></div><span class="hit" tabindex="0" data-tip="正式验证器|15 个中确认 14 个：一次误拒，是完成门控的代价。"></span></div><span class="val">14/15</span></div>
+        </div></div>
+      <div class="tip" role="tooltip"></div>
+      <details class="table-toggle"><summary>以表格显示</summary>
+        <table><thead><tr><th>指标</th><th>对照组</th><th>PrefMem</th></tr></thead><tbody>
+          <tr><td>无需提问即确定目标（EXP-01）</td><td>0/36</td><td>36/36</td></tr>
+          <tr><td>稳定失败后恢复</td><td>0/40</td><td>40/40</td></tr>
+          <tr><td>有监控器时的预期路径（EXP-06）</td><td>12/36</td><td>22/36</td></tr>
+          <tr><td>未完成状态被要求修正（EXP-07）</td><td>0/21</td><td>21/21</td></tr>
+          <tr><td>接受已完成状态（EXP-07）</td><td>15/15</td><td>14/15</td></tr>
+        </tbody></table></details>
+    </div>
+
+    <h3 style="font-size:24px;margin:44px 0 6px">MuJoCo 端到端实验</h3>
+    <p class="muted" style="max-width:66ch;font-size:17px">十二个仿真回合，从目标到完全严格执行，分四个阶段评分。十二个回合都达成了物理目标；验证器漏判的三个回合都是低对比度场景，方块其实已经放对，它却拒绝了。</p>
+    <div class="chart" id="funnel">
+      <div class="row"><div class="q">目标约定正确且达成物理目标</div><div class="bars"><div class="bar-line"><div class="track"><div class="fill prefmem" style="width:100%"></div><span class="hit" tabindex="0" data-tip="12 个中 12 个|目标约定正确，且按仿真真值达成物理目标。"></span></div><span class="val">12/12</span></div></div></div>
+      <div class="row"><div class="q">全部定位均为严格模式</div><div class="bars"><div class="bar-line"><div class="track"><div class="fill prefmem" style="width:91.7%"></div><span class="hit" tabindex="0" data-tip="12 个中 11 个|每一步定位都在无辅助的情况下通过。"></span></div><span class="val">11/12</span></div></div></div>
+      <div class="row"><div class="q">验证器确认完成</div><div class="bars"><div class="bar-line"><div class="track"><div class="fill prefmem" style="width:75%"></div><span class="hit" tabindex="0" data-tip="12 个中 9 个|验证器宣告目标已完成。"></span></div><span class="val">9/12</span></div></div></div>
+      <div class="row"><div class="q">严格的单动作完整链路</div><div class="bars"><div class="bar-line"><div class="track"><div class="fill prefmem" style="width:66.7%"></div><span class="hit" tabindex="0" data-tip="12 个中 8 个|整条链路以严格模式、恰好一个动作完成。"></span></div><span class="val">8/12</span></div></div></div>
+      <div class="tip" role="tooltip"></div>
+    </div>
+
+    <div class="callout"><b>我会继续解决的局限。</b>在包含相关修改的 30 次交互之后，8 个记忆库中只有 2 个在最后仍能回忆起目标偏好：用自由文本标识记录，会让系统改写错误的记录。这指向一个改进方向：为用户、任务、偏好维度和来源使用不可变的结构化键。</div>
+  </section>
+</main>
+
+<footer class="site-foot">
+  <div class="wrap">
+    <span>Yuxin Liu，伦敦。更新于 2026 年 11 月。</span>
+    <span><a href="mailto:slyx361@outlook.com">邮箱</a>&nbsp;&nbsp; <a href="https://github.com/KasLoot">GitHub</a>&nbsp;&nbsp; <a href="https://www.linkedin.com/in/yuxin-liu-a08b32296/">LinkedIn</a></span>
+  </div>
+</footer>
+<script src="../../assets/js/site.js" defer></script>
+</body>
+</html>

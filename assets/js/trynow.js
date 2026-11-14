@@ -3,6 +3,7 @@ import {
   CLIPS, REPLAY_NOTES, MAX_TASK_CHARS, chatCompletion, generateDraft, observeKeyframe,
   decide, ProgressTracker, progressText,
 } from "./rb-core.js";
+import { L, tr } from "./trynow-i18n.js";
 
 const cfg = Object.assign({ workerUrl: "", turnstileSiteKey: "", model: "gpt-6.1-terra", openaiBase: "https://api.openai.com/v1" }, window.SITE_CONFIG || {});
 cfg.workerUrl = (cfg.workerUrl || "").replace(/\/$/, "");
@@ -33,7 +34,7 @@ function init() {
   $("tn-view-mine").addEventListener("click", () => setView(false));
   $("tn-view-orig").addEventListener("click", () => setView(true));
   $("tn-replay-btn").addEventListener("click", () => { const v = $("tn-video"); v.currentTime = 0; v.play().catch(() => {}); });
-  $("tn-notes").replaceChildren(...REPLAY_NOTES.map((t) => el("li", { text: t })));
+  $("tn-notes").replaceChildren(...L.notes.map((t) => el("li", { text: t })));
   selectClip(S.clip, true);
   renderPlaceholder();
   checkDemo();
@@ -41,20 +42,20 @@ function init() {
 
 function selectClip(clip, initial = false) {
   S.clip = clip;
-  if (!S.edited || initial) { $("tn-task").value = CLIPS[clip].default_task; S.edited = false; }
+  if (!S.edited || initial) { $("tn-task").value = L.defaultTask(clip); S.edited = false; }
   count();
   if (S.draft && S.draftClip !== clip) {
     S.draft = null; S.ticket = null; $("tn-run").disabled = true;
     renderPlaceholder();
-    info("The clip changed, so generate a new monitor for it.");
+    info(L.clipChanged);
   }
 }
-function count() { const n = $("tn-task").value.length; $("tn-count").textContent = `${n} / ${MAX_TASK_CHARS} characters`; }
+function count() { const n = $("tn-task").value.length; $("tn-count").textContent = L.chars(n, MAX_TASK_CHARS); }
 
 async function checkDemo() {
   const demo = document.querySelector('input[name="tn-mode"][value="demo"]');
   if (!cfg.workerUrl) {
-    demo.disabled = true; $("tn-demo-note").textContent = "Not switched on yet. Use your own key for now.";
+    demo.disabled = true; $("tn-demo-note").textContent = L.demoOff;
     setMode("own"); return;
   }
   try {
@@ -62,12 +63,12 @@ async function checkDemo() {
     const h = await r.json();
     if (!r.ok || !h.ok) throw new Error();
     S.demoReady = true; demo.disabled = false;
-    $("tn-demo-note").textContent = `${h.limits.runs_per_ip_per_day} runs per visitor per day, on Yuxin's key`;
+    $("tn-demo-note").textContent = L.demoLimits(h.limits.runs_per_ip_per_day);
     if (h.model) $("tn-model").textContent = h.model;
     demo.checked = true; setMode("demo");
     if (cfg.turnstileSiteKey) loadTurnstile();
   } catch {
-    demo.disabled = true; $("tn-demo-note").textContent = "Unavailable right now. Use your own key, or try later.";
+    demo.disabled = true; $("tn-demo-note").textContent = L.demoDown;
     setMode("own");
   }
 }
@@ -88,7 +89,7 @@ const tsReset = () => { if (S.tsWidget !== null && window.turnstile) window.turn
 // ---------- messages ----------
 function msg(text, kind) { $("tn-gen-msg").replaceChildren(text ? el("div", { class: "msg " + kind, role: kind === "error" ? "alert" : "status", text }) : ""); }
 const info = (t) => msg(t, "info");
-const fail = (t) => msg(t, "error");
+const fail = (t) => msg(tr(t), "error");
 function busy(on, text = "") {
   $("tn-generate").disabled = on;
   $("tn-gen-status").replaceChildren(on ? el("span", { class: "busy", text }) : "");
@@ -97,7 +98,7 @@ function busy(on, text = "") {
 // ---------- OpenAI access ----------
 function ownKey() {
   const key = $("tn-key").value.trim();
-  if (!/^sk-[\w-]{10,}/.test(key)) throw new Error("Paste an OpenAI API key that starts with sk-.");
+  if (!/^sk-[\w-]{10,}/.test(key)) throw new Error(L.needKey);
   return key;
 }
 const directCall = (key) => (body) => chatCompletion(fetch.bind(window), cfg.openaiBase, key, body);
@@ -116,7 +117,7 @@ async function worker(path, body) {
   const r = await fetch(cfg.workerUrl + path, { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify(body) });
   let j = {};
   try { j = await r.json(); } catch { /* empty */ }
-  if (!r.ok) throw new Error(j.error || `The demo server returned HTTP ${r.status}.`);
+  if (!r.ok) throw new Error(j.error || L.serverHttp(r.status));
   return j;
 }
 
@@ -124,8 +125,8 @@ async function worker(path, body) {
 async function onGenerate() {
   msg("");
   const clip = S.clip, task = $("tn-task").value.trim();
-  if (!task) { fail("Describe the task first."); return; }
-  busy(true, "Generating the monitor. This usually takes 20–60 seconds.");
+  if (!task) { fail(L.needTask); return; }
+  busy(true, L.generating);
   $("tn-run").disabled = true; S.draft = null; S.ticket = null;
   renderPlaceholder(true);
   try {
@@ -133,51 +134,50 @@ async function onGenerate() {
     if (S.mode === "demo") {
       res = await worker("/generate", { clip, task, turnstile: tsToken() });
       if (res.remaining !== null && res.remaining !== undefined)
-        $("tn-demo-note").textContent = `${res.remaining} demo run${res.remaining === 1 ? "" : "s"} left today`;
+        $("tn-demo-note").textContent = L.demoLeft(res.remaining);
     } else {
       const key = ownKey();
       res = await generateDraft(directCall(key), { clip, task, sceneUrl: await dataUrl(CLIPS[clip].scene), model: cfg.model });
     }
-    if (!res.draft) { renderPlaceholder(); info("The builder needs more detail: " + res.clarification); return; }
+    if (!res.draft) { renderPlaceholder(); info(L.needMore(res.clarification)); return; }
     S.draft = res.draft; S.draftClip = clip; S.ticket = res.ticket || null;
     renderDraft(res.draft);
     $("tn-run").disabled = false;
-    $("tn-run-note").textContent = `Runs ${CLIPS[clip].frames.length} keyframes of the ${CLIPS[clip].title.toLowerCase()} clip.`;
+    $("tn-run-note").textContent = L.runNote(CLIPS[clip].frames.length, clip);
   } catch (e) {
     renderPlaceholder();
-    fail(e.message || "Generation failed. Try again.");
+    fail(e.message || L.genFailed);
   } finally { busy(false); tsReset(); }
 }
 
 function renderPlaceholder(working = false) {
-  $("tn-draft-badge").textContent = "Draft";
+  $("tn-draft-badge").textContent = L.draft;
   $("tn-preview-body").replaceChildren(el("div", { class: "placeholder" },
     el("div", { class: "spark", "aria-hidden": "true", text: "✦" }),
-    el("h4", { text: working ? "Writing your specialists…" : "Your specialists will appear here" }),
-    el("p", { text: working ? "The builder is reading your description and the first frame of the clip." :
-      "Explain what success looks like and which failures matter, then generate a monitor." })));
+    el("h4", { text: working ? L.phWorkingTitle : L.phTitle }),
+    el("p", { text: working ? L.phWorking : L.ph })));
 }
 
 function renderDraft(d) {
-  $("tn-draft-badge").textContent = `${d.specialists.length} specialist${d.specialists.length === 1 ? "" : "s"}${d.progress ? " + progress" : ""}`;
+  $("tn-draft-badge").textContent = L.badge(d.specialists.length, !!d.progress);
   const body = [el("h4", { class: "sans", style: "font-family:var(--sans);font-size:17px;font-weight:650;margin:0 0 4px", text: d.name }), el("p", { style: "margin:0 0 6px;font-size:14px", text: d.summary })];
   for (const s of d.specialists) {
     body.push(el("div", { class: "spec" },
       el("div", { class: "spec-top" }, el("strong", { text: s.name }),
-        el("span", { class: "tag " + (s.failure_type ? "failure" : "success"), text: s.failure_type || "Success" })),
-      el("details", {}, el("summary", { text: "Prompt" }), el("pre", { text: s.prompt }))));
+        el("span", { class: "tag " + (s.failure_type ? "failure" : "success"), text: s.failure_type || L.success })),
+      el("details", {}, el("summary", { text: L.prompt }), el("pre", { text: s.prompt }))));
   }
   if (d.progress) {
     const p = d.progress;
     const rows = p.nodes.map((n) => el("tr", {}, el("td", { text: n.id }), el("td", { text: n.label }),
       el("td", { text: n.total !== null ? `${n.completed}/${n.total}` : "–" })));
     body.push(el("div", { class: "spec" },
-      el("div", { class: "spec-top" }, el("strong", { text: "Progress observer" }), el("span", { class: "tag progress", text: `${p.nodes.length} nodes` })),
-      el("table", { class: "nodes" }, el("thead", {}, el("tr", {}, el("th", { text: "Node" }), el("th", { text: "Label" }), el("th", { text: p.unit_label }))), el("tbody", {}, ...rows)),
-      el("details", {}, el("summary", { text: "Prompt and node criteria" }),
+      el("div", { class: "spec-top" }, el("strong", { text: L.progressObserver }), el("span", { class: "tag progress", text: L.nodes(p.nodes.length) })),
+      el("table", { class: "nodes" }, el("thead", {}, el("tr", {}, el("th", { text: L.node }), el("th", { text: L.label }), el("th", { text: p.unit_label }))), el("tbody", {}, ...rows)),
+      el("details", {}, el("summary", { text: L.promptCriteria }),
         el("pre", { text: p.prompt + "\n\n" + p.nodes.map((n) => `${n.id}: ${n.criteria}`).join("\n\n") }))));
   }
-  body.push(el("details", { style: "margin-top:10px;font-size:13px" }, el("summary", { text: "Draft JSON" }),
+  body.push(el("details", { style: "margin-top:10px;font-size:13px" }, el("summary", { text: L.draftJson }),
     el("pre", { style: "white-space:pre-wrap;font-size:12px;max-height:260px;overflow:auto", text: JSON.stringify(d, null, 2) })));
   $("tn-preview-body").replaceChildren(...body);
 }
@@ -202,7 +202,7 @@ async function onRun() {
   msg("");
   $("tn-replay").hidden = false;
   $("tn-run").disabled = true;
-  $("tn-orig-note").textContent = c.original;
+  $("tn-orig-note").textContent = L.original(clip);
 
   // stage: video + covers over the burned-in overlay + our overlay panel
   const stage = $("tn-stage"), video = $("tn-video");
@@ -218,8 +218,8 @@ async function onRun() {
   const strip = $("tn-strip"); strip.replaceChildren();
   const chips = new Map();
   for (const f of c.frames) {
-    const lab = el("span", { class: "lab" }, el("b", { text: "Waiting" }), `${f.t.toFixed(1)} s`);
-    const b = el("button", { type: "button", "aria-label": `Keyframe ${f.k} at ${f.t.toFixed(1)} seconds` }, el("img", { src: asset(f.src), alt: "" }), lab);
+    const lab = el("span", { class: "lab" }, el("b", { text: L.waiting }), `${f.t.toFixed(1)} s`);
+    const b = el("button", { type: "button", "aria-label": L.keyframeAria(f.k, f.t.toFixed(1)) }, el("img", { src: asset(f.src), alt: "" }), lab);
     b.addEventListener("click", () => { video.currentTime = f.t; video.play().catch(() => {}); });
     strip.append(b); chips.set(f.k, b);
   }
@@ -247,8 +247,8 @@ async function onRun() {
     } else lines.push(el("span", { text: "Failure: " + (d.status === "FAIL" ? d.description : "none") }));
     ov.replaceChildren(...lines);
     $("tn-status").textContent = d.status; $("tn-status").dataset.status = d.status;
-    $("tn-failure").textContent = "Failure type: " + (d.failure_types && d.failure_types.length ? d.failure_types.join(", ") : "NONE");
-    $("tn-detail").textContent = e ? (d.description || "No confirmed success or failure in this keyframe.") : "Waiting for the first keyframe";
+    $("tn-failure").textContent = L.failureType(d.failure_types && d.failure_types.length ? d.failure_types.join(", ") : "NONE");
+    $("tn-detail").textContent = e ? (d.description || L.noDecision) : L.waitFirst;
     chips.forEach((b, k) => b.classList.toggle("now", !!e && e.k === k));
     if (e) renderProgress(e.prog, draft, history);
   };
@@ -258,7 +258,7 @@ async function onRun() {
     if (pending && video.currentTime >= pending.t - 0.02 && !error) {
       if (!waiting) { waiting = true; video.pause(); }
       hideWait();
-      stage.append(el("div", { class: "wait", role: "status", text: `Evaluating keyframe ${pending.k} of ${c.frames.length}…` }));
+      stage.append(el("div", { class: "wait", role: "status", text: L.evaluating(pending.k, c.frames.length) }));
     } else if (waiting) {
       waiting = false; hideWait(); video.play().catch(() => {});
     }
@@ -282,11 +282,11 @@ async function onRun() {
         tbody.append(el("tr", {}, el("td", { text: `${r.k}  (${r.t.toFixed(1)} s)` }), el("td", { text: o.name + (o.failure_type ? ` (${o.failure_type})` : "") }),
           el("td", { class: "v-" + o.verdict, text: o.verdict }), el("td", { text: o.error ? `${o.reason}: ${o.error}` : o.reason })));
       }
-      if (r.progress) tbody.append(el("tr", {}, el("td", { text: `${r.k}  (${r.t.toFixed(1)} s)` }), el("td", { text: "Progress observer" }),
+      if (r.progress) tbody.append(el("tr", {}, el("td", { text: `${r.k}  (${r.t.toFixed(1)} s)` }), el("td", { text: L.progressObserver }),
         el("td", { text: r.progress.node_id }), el("td", { text: r.progress.error ? `${r.progress.reason}: ${r.progress.error}` : r.progress.reason })));
       next++;
     }
-    $("tn-obs-count").textContent = `${tbody.children.length} answers from ${next} of ${c.frames.length} keyframes`;
+    $("tn-obs-count").textContent = L.answers(tbody.children.length, next, c.frames.length);
     if (runId === S.run) { gate(); paint(); }
   };
 
@@ -300,7 +300,7 @@ async function onRun() {
       const map = new Map(c.frames.map((f, i) => [f.k, urls[i]]));
       frameUrl = (k) => map.get(k); sceneUrl = await dataUrl(c.scene);
     }
-  } catch { fail("Couldn't load the replay frames. Reload the page and try again."); return; }
+  } catch { fail(L.framesFailed); return; }
 
   const fetchFrame = (k) => mode === "demo"
     ? worker("/observe", { clip, k, draft, ticket })
@@ -317,7 +317,7 @@ async function onRun() {
       } catch (e) {
         if (runId !== S.run) return;
         error = e; hideWait(); waiting = false;
-        fail(e.message + " The replay stopped; the keyframes evaluated so far are kept.");
+        msg(tr(e.message) + L.stopped, "error");
       }
     }
   };
@@ -328,16 +328,16 @@ async function onRun() {
 function renderProgress(p, draft, history) {
   const box = $("tn-prog");
   if (!draft.progress) {
-    box.replaceChildren(el("h3", { text: "Task progress" }), el("p", { text: "This monitor has no progress observer. Ask for progress stages in the description to add one." }));
+    box.replaceChildren(el("h3", { text: L.taskProgress }), el("p", { text: L.noProgress }));
     return;
   }
   const total = p && p.confirmed && p.total !== null ? p.total : null;
-  const kids = [el("h3", { text: "Task progress" }),
-    el("div", { class: "count", text: progressText(p) })];
+  const kids = [el("h3", { text: L.taskProgress }),
+    el("div", { class: "count", text: L.progress(p) })];
   if (total !== null && p.quality === "confirmed") kids.push(el("progress", { max: String(total), value: String(p.completed) }));
-  kids.push(el("p", { text: p ? `Evidence: ${p.quality}. ${p.reason || ""}` : "Waiting for progress evidence." }));
+  kids.push(el("p", { text: p ? L.evidence(L.quality(p.quality), p.reason) : L.waitingProgress }));
   if (history.length) {
-    kids.push(el("details", { style: "margin-top:10px;font-size:13.5px" }, el("summary", { text: "Confirmed transitions" }),
+    kids.push(el("details", { style: "margin-top:10px;font-size:13.5px" }, el("summary", { text: L.transitions }),
       el("ol", { style: "padding-left:20px;margin:8px 0 0" }, ...history.map((h) => el("li", { text: `${h.t.toFixed(1)} s  ${h.label}` })))));
   }
   box.replaceChildren(...kids);

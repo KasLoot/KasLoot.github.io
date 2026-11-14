@@ -1,0 +1,333 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Yuxin Liu — 机器人与人工智能</title>
+<meta name="description" content="Yuxin Liu，伦敦的机器人与人工智能研究者，研究能完成长时程任务、并在工作中持续进步的机器人策略。项目：RoboBrain、PrefMem、RoboTTA。">
+<meta property="og:title" content="Yuxin Liu — 机器人与人工智能">
+<meta property="og:description" content="能完成长时程任务、并在工作中持续进步的机器人策略。">
+<meta property="og:image" content="https://kasloot.github.io/assets/img/og.jpg">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:type" content="website">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="alternate" hreflang="en" href="https://kasloot.github.io/">
+<link rel="alternate" hreflang="zh-CN" href="https://kasloot.github.io/zh/">
+<link rel="alternate" hreflang="x-default" href="https://kasloot.github.io/">
+<link rel="icon" href="../assets/img/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="../assets/css/site.css">
+</head>
+<body>
+<a class="skip" href="#main">跳到正文</a>
+<header class="site-head">
+  <div class="wrap">
+    <a class="home" href="./">Yuxin Liu</a>
+    <nav aria-label="主导航">
+      <a href="#research">研究</a>
+      <a href="#projects">项目</a>
+      <a href="#publications">论文</a>
+      <a href="#experience">经历</a>
+      <a href="../assets/docs/Yuxin_Liu_CV.pdf">简历</a>
+      <a class="lang" href="../" lang="en" hreflang="en">English</a>
+    </nav>
+  </div>
+</header>
+
+<main id="main">
+  <section class="hero wrap" aria-labelledby="name">
+    <div class="hero-grid">
+      <img class="portrait" src="../assets/img/yuxin.jpg" width="220" height="250" alt="Yuxin Liu 的照片">
+      <div>
+        <h1 id="name">Yuxin Liu</h1>
+        <p class="thesis">能完成长时程任务、并在工作中持续进步的机器人策略。</p>
+        <p class="bio">我是一名在伦敦的机器人与人工智能研究者。2026 年我在伦敦大学学院（UCL）完成机器人与人工智能硕士学位，目前在 UCL 担任助教，并在研究 RoboTTA：一种在测试阶段持续改进、面向长时程操作任务的机器人策略。此前，我在智元机器人和小米从事机器人产品与算法工作。</p>
+        <ul class="affiliations" aria-label="机构">
+          <li><a href="#education"><strong>UCL</strong><span>机器人与人工智能硕士，助教</span></a></li>
+          <li><a href="#experience"><strong>智元机器人</strong><span>Genie G1 HMI 与 Genie Vision</span></a></li>
+          <li><a href="#experience"><strong>小米</strong><span>机器狗导航</span></a></li>
+        </ul>
+        <ul class="contact-links">
+          <li><a href="mailto:slyx361@outlook.com">slyx361@outlook.com</a></li>
+          <li><a href="https://github.com/KasLoot">GitHub</a></li>
+          <li><a href="https://www.linkedin.com/in/yuxin-liu-a08b32296/">LinkedIn</a></li>
+          <li><a href="../assets/docs/Yuxin_Liu_CV.pdf">英文简历（PDF）</a></li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <section class="monitor-feature wrap" aria-labelledby="rb-feature-h" data-clips>
+    <div class="feature-head">
+      <h2 id="rb-feature-h"><a href="robobrain/">RoboBrain</a></h2>
+      <p>机器人任务的实时监控</p>
+    </div>
+    <div class="frame-row">
+      <div class="console-frame">
+        <div class="bar">
+          <span class="mark" aria-hidden="true">R</span><span class="bar-title">实时运行录像</span>
+          <span class="clip-tabs" role="group" aria-label="选择实时运行录像">
+            <button type="button" data-clip="plug" aria-pressed="true" data-src="../assets/video/plug.mp4" data-poster="../assets/video/plug-poster.jpg" data-label="RoboBrain 监控机械臂插入 USB 插头，并标记插头旋转失败">插头插入</button>
+            <button type="button" data-clip="sort" aria-pressed="false" data-src="../assets/video/sort.mp4" data-poster="../assets/video/sort-poster.jpg" data-label="RoboBrain 监控一个人把砖块放进盒子、把线缆放到垫子上，画面叠加实时状态">物品分拣</button>
+          </span>
+        </div>
+        <video src="../assets/video/plug.mp4" poster="../assets/video/plug-poster.jpg" autoplay muted playsinline preload="metadata" aria-label="RoboBrain 监控机械臂插入 USB 插头，并标记插头旋转失败"></video>
+      </div>
+      <div class="feature-text">
+        <p class="feature-caption" data-caption="plug">机械臂正在插入 USB 插头。RoboBrain 实时监控；为了便于看清状态变化，视频加速约 4 倍。第二次尝试时，插头在夹爪中发生旋转，RoboBrain 依据可见证据标记失败，并在任务重新开始后恢复监控。</p>
+        <p class="feature-caption" data-caption="sort" hidden>一个人正在把砖块放进盒子、把线缆放到垫子上。视觉语言模型检查每一帧新的相机画面，叠加信息显示任务是在正常进行、已经完成还是失败，以及已分拣好几组。</p>
+        <p class="muted">它在单块 GPU 上以 10–15 Hz 实时运行。你可以为任一视频生成自己的监控方案并回放。</p>
+        <ul class="links">
+          <li><a class="btn primary" href="robobrain/#try">用这些视频试一试</a></li>
+          <li><a class="btn" href="robobrain/">工作原理</a></li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id="research" aria-labelledby="research-h">
+    <div class="wrap section-grid">
+      <h2 id="research-h">研究</h2>
+      <ol class="journey">
+        <li>
+          <h3><span class="step" aria-hidden="true">1</span>物理智能将走向何方</h3>
+          <p>机器人学习正在从预设动作走向通用策略：接收语言和相机图像，在物理世界中行动。我认为下一步，是让机器人像人在岗位上工作那样：理解对方真正想要什么，把一项长任务坚持做完，在出错时有所察觉，并随着经验不断进步，而不只是依靠又一轮离线预训练。</p>
+        </li>
+        <li>
+          <h3><span class="step" aria-hidden="true">2</span>还缺少什么</h3>
+          <dl class="gaps">
+            <dt>闭环</dt>
+            <dd>一个从不检查每一步是否成功的策略，分不清任务已经完成还是抓取已经滑脱。机器人需要依据证据判断成功、失败与进度，并决定何时询问、重新规划或停止。</dd>
+            <dt>长时程</dt>
+            <dd>在长任务中，小误差会不断累积；而当前的视觉-语言-动作模型往往复现训练轨迹，而不是在新场景中遵循新的指令。</dd>
+            <dt>自我改进</dt>
+            <dd>策略主要依靠更多数据和更多预训练来提升，还不能在部署过程中从自己的尝试中学习。</dd>
+          </dl>
+        </li>
+        <li>
+          <h3><span class="step" aria-hidden="true">3</span>我的工作如何衔接</h3>
+          <p class="fit-intro">RoboBrain 和 PrefMem 在策略之外闭合回路；我当前的研究 RoboTTA 则把这个回路搬进策略内部，让机器人在工作中自我改进。RoboAstra 是它们汇合的地方。</p>
+          <ul class="fit">
+            <li><div class="who"><a href="robobrain/">RoboBrain</a><span>可运行的系统</span></div><p>依据视觉证据，实时判断成功、失败与进度。</p><ul class="chips" aria-label="对应的缺口"><li>闭环</li></ul></li>
+            <li><div class="who"><a href="prefmem/">PrefMem</a><span>硕士毕业论文，2026</span></div><p>先确认用户想要什么，再逐步规划、检查每一步，并在宣告任务完成前进行核验。</p><ul class="chips" aria-label="对应的缺口"><li>闭环</li><li>长时程</li></ul></li>
+            <li><div class="who"><a href="#robotta">RoboTTA</a><span>研究进行中</span></div><p>一种能记住自己看到了什么、尝试了什么、结果如何，并在执行中更新这段记忆的策略。</p><ul class="chips" aria-label="对应的缺口"><li>长时程</li><li>自我改进</li></ul></li>
+            <li><div class="who"><a href="#roboastra">RoboAstra</a><span>开发中</span></div><p>一个整合 PrefMem 与 RoboBrain 的系统，并在执行智能体无法恢复的场景中引入 VLM 驱动的控制。</p><ul class="chips" aria-label="对应的缺口"><li>闭环</li><li>长时程</li></ul></li>
+          </ul>
+        </li>
+      </ol>
+    </div>
+  </section>
+
+  <section class="section" id="projects" aria-labelledby="projects-h">
+    <div class="wrap section-grid">
+      <h2 id="projects-h">项目</h2>
+      <div>
+        <article class="plate" aria-labelledby="rb-h">
+          <div class="media clip-pair">
+            <figure><video src="../assets/video/plug.mp4" poster="../assets/video/plug-poster.jpg" controls muted playsinline preload="none" aria-label="RoboBrain 监控机器人插头插入"></video><figcaption>机器人插头插入，实时监控（视频加速约 4 倍）</figcaption></figure>
+            <figure><video src="../assets/video/sort.mp4" poster="../assets/video/sort-poster.jpg" controls muted playsinline preload="none" aria-label="RoboBrain 监控带进度跟踪的分拣任务"></video><figcaption>带进度跟踪的物品分拣</figcaption></figure>
+          </div>
+          <div>
+            <h3 id="rb-h"><a href="robobrain/" style="color:inherit;text-decoration:none">RoboBrain</a></h3>
+            <p class="meta"><span>2026 年 6 月至今</span><span>个人项目</span></p>
+            <p>面向机器人任务的实时闭环监控系统。多个独立的成功与失败“专家”分别就当前画面向视觉语言模型提出一个具体问题；任何肯定的判断都必须通过一轮简短的验证，状态才会改变。任务构建器（Task Builder）可根据自然语言描述和一张场景照片，起草完整的监控配置。</p>
+            <ul class="facts">
+              <li><b>197/198</b><span>三个插头插入数据集上，回合结果判断正确</span></li>
+              <li><b>10–15 Hz</b><span>在单块 RTX Pro 6000 上使用 Gemma 4 26B A4B 实时监控</span></li>
+              <li><b>2 项任务</b><span>机器人插头插入，以及带进度跟踪的物品分拣</span></li>
+            </ul>
+            <ul class="links">
+              <li><a class="btn primary" href="robobrain/">项目页面</a></li>
+              <li><a class="btn" href="robobrain/#try">试一试</a></li>
+              <li><a class="btn" href="https://github.com/KasLoot/RoboBrain">代码</a></li>
+            </ul>
+          </div>
+        </article>
+
+        <article class="plate" aria-labelledby="pm-h">
+          <figure class="media figure-box" style="margin:0">
+            <svg class="mini" viewBox="0 0 520 290" role="img" aria-labelledby="pm-fig">
+              <title id="pm-fig">PrefMem 架构（简化）：用户只与 HRI 智能体交流，后者通过记忆智能体获取用户偏好；确定性核心掌管目标与状态，调用规划、监控和验证服务，每次只向人或 MuJoCo 执行器下发一个任务。</title>
+              <defs><marker id="mp" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path class="arrowhead" d="M0,0 L10,5 L0,10 z"/></marker></defs>
+              <path class="edge" d="M128,145 H153" marker-start="url(#mp)" marker-end="url(#mp)"/>
+              <path class="edge" d="M231,176 V209" marker-start="url(#mp)" marker-end="url(#mp)"/>
+              <path class="edge" d="M308,145 H333" marker-start="url(#mp)" marker-end="url(#mp)"/>
+              <path class="edge" d="M420,82 V103" marker-start="url(#mp)" marker-end="url(#mp)"/>
+              <path class="edge" d="M420,186 V209" marker-end="url(#mp)"/>
+              <text class="note" x="428" y="202">一个任务</text>
+              <g class="node human"><rect x="16" y="116" width="110" height="58"/><text class="t" x="30" y="141">用户</text><text class="s" x="30" y="160">提问、确认</text></g>
+              <g class="node agent"><rect x="156" y="116" width="150" height="58"/><text class="t" x="170" y="141">HRI 智能体</text><text class="s" x="170" y="160">澄清意图</text></g>
+              <g class="node agent"><rect x="156" y="212" width="150" height="58"/><text class="t" x="170" y="237">记忆智能体</text><text class="s" x="170" y="256">用户偏好</text></g>
+              <g class="node agent"><rect x="336" y="18" width="168" height="62"/><text class="t" x="350" y="44">规划、监控、</text><text class="t" x="350" y="64">验证</text></g>
+              <g class="node host"><rect x="336" y="106" width="168" height="78"/><text class="t" x="350" y="132">确定性核心</text><text class="s" x="350" y="151">掌管目标与状态</text><text class="s" x="350" y="168">滚动时域控制</text></g>
+              <g class="node data"><rect x="336" y="212" width="168" height="58"/><text class="t" x="350" y="237">执行器</text><text class="s" x="350" y="256">人或 MuJoCo</text></g>
+            </svg>
+            <figcaption>架构，根据论文简化</figcaption>
+          </figure>
+          <div>
+            <h3 id="pm-h"><a href="prefmem/" style="color:inherit;text-decoration:none">PrefMem</a></h3>
+            <p class="meta"><span>2026 年 4 月至 9 月</span><span>UCL 硕士毕业论文</span><span>导师：Dr Valerio Modugno</span></p>
+            <p>一个具备偏好感知、以证据为门控的智能体层，可置于任意机器人动作执行器之上。五个与模型交互的智能体分别负责对话、偏好记忆、规划、单步监控和最终验证，确定性运行时则掌管目标、确认、状态转换与恢复。无需任何训练。</p>
+            <ul class="facts">
+              <li><b>0 → 36</b><span>记忆中有一条相关偏好后，36 个目标中无需提问即可确定的数量</span></li>
+              <li><b>21/21</b><span>被验证器发现的明显未完成状态；没有验证器时为 0/21</span></li>
+              <li><b>12/12</b><span>达成物理目标的 MuJoCo 回合</span></li>
+            </ul>
+            <ul class="links">
+              <li><a class="btn primary" href="prefmem/">项目页面</a></li>
+              <li><a class="btn" href="https://github.com/KasLoot/RoboPref">代码</a></li>
+            </ul>
+          </div>
+        </article>
+
+        <article class="plate" id="robotta" aria-labelledby="tta-h">
+          <figure class="media figure-box" style="margin:0">
+            <svg class="mini" viewBox="0 0 520 290" role="img" aria-labelledby="tta-fig">
+              <title id="tta-fig">RoboTTA 设计：策略依据当前画面和执行记忆行动；执行过程中，记忆会随机器人观察到的内容、尝试的动作及其结果不断更新。</title>
+              <defs><marker id="mt" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path class="arrowhead" d="M0,0 L10,5 L0,10 z"/></marker></defs>
+              <path class="edge" d="M164,59 H183" marker-end="url(#mt)"/>
+              <path class="edge" d="M334,59 H353" marker-end="url(#mt)"/>
+              <path class="edge" d="M90,30 V14 H430 V27" marker-end="url(#mt)"/>
+              <path class="edge" d="M430,88 V147" marker-end="url(#mt)"/>
+              <path class="edge" d="M356,179 H337" marker-end="url(#mt)"/>
+              <path class="edge" d="M260,150 V91" marker-end="url(#mt)"/>
+              <text class="note" x="270" y="124">工作中持续更新</text>
+              <g class="node data"><rect x="16" y="30" width="148" height="58"/><text class="t" x="30" y="55">观察</text><text class="s" x="30" y="74">机器人所见</text></g>
+              <g class="node host"><rect x="186" y="30" width="148" height="58"/><text class="t" x="200" y="55">记忆状态</text><text class="s" x="200" y="74">测试阶段保留</text></g>
+              <g class="node agent"><rect x="356" y="30" width="148" height="58"/><text class="t" x="370" y="55">策略</text><text class="s" x="370" y="74">画面 + 记忆</text></g>
+              <g class="node decide"><rect x="356" y="150" width="148" height="58"/><text class="t" x="370" y="175">动作</text><text class="s" x="370" y="194">所做的尝试</text></g>
+              <g class="node data"><rect x="186" y="150" width="148" height="58"/><text class="t" x="200" y="175">结果</text><text class="s" x="200" y="194">发生了什么</text></g>
+              <rect class="group" x="16" y="232" width="488" height="44" rx="10"/>
+              <text class="note" x="32" y="259">记忆候选架构：TTT 层、液态神经网络、Mamba、RNN</text>
+            </svg>
+            <figcaption>策略的设计思路</figcaption>
+          </figure>
+          <div>
+            <h3 id="tta-h">RoboTTA</h3>
+            <p class="meta"><span>2026 年 10 月至今</span><span>Robotic Test-time Advancement Policy</span><span class="status-note">研究进行中</span></p>
+            <p>一种在工作中不断进步的机器人策略。RoboTTA 维护一份执行记忆，记录机器人观察到了什么、尝试了哪些动作以及产生了什么结果，并在测试阶段持续更新这份记忆。每一步都参考此前的尝试来决定，让长时程任务在小误差累积时仍能保持正轨，也让策略在部署期间不断改进，而无需大规模的新数据采集或预训练。</p>
+            <ul class="facts">
+              <li><b>记忆</b><span>包括观察、已尝试的动作及其结果，在执行中持续更新</span></li>
+              <li><b>测试阶段</b><span>策略在运行中改进，而不必等待下一轮训练</span></li>
+              <li><b>4</b><span>种正在比较的记忆架构：测试时训练（TTT）层、液态神经网络、Mamba 和循环神经网络</span></li>
+            </ul>
+          </div>
+        </article>
+
+        <article class="plate" id="roboastra" aria-labelledby="astra-h">
+          <figure class="media figure-box" style="margin:0">
+            <svg class="mini" viewBox="0 0 520 290" role="img" aria-labelledby="astra-fig">
+              <title id="astra-fig">RoboAstra 规划：自然语言指令交给 PrefMem 和直接操控机器人的执行智能体；RoboBrain 监控任务，执行智能体无法恢复时，由 VLM 驱动的控制接管。</title>
+              <defs><marker id="ma" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path class="arrowhead" d="M0,0 L10,5 L0,10 z"/></marker></defs>
+              <path class="edge" d="M140,132 H156 V49 H173" marker-end="url(#ma)"/>
+              <path class="edge" d="M140,147 H173" marker-end="url(#ma)"/>
+              <path class="edge" d="M256,78 V113" marker-end="url(#ma)"/>
+              <path class="edge" d="M336,145 H369" marker-end="url(#ma)"/>
+              <path class="edge dash" d="M388,174 V194 H300 V209" marker-end="url(#ma)"/>
+              <text class="note" x="400" y="198">观察</text>
+              <path class="edge" d="M226,212 V177" marker-end="url(#ma)"/>
+              <text class="note" x="160" y="198">状态</text>
+              <path class="edge" d="M336,241 H369" marker-end="url(#ma)"/>
+              <path class="edge" d="M470,212 V177" marker-end="url(#ma)"/>
+              <g class="node human"><rect x="16" y="112" width="124" height="66"/><text class="t" x="30" y="140">指令</text><text class="s" x="30" y="159">自然语言</text></g>
+              <g class="node agent"><rect x="176" y="20" width="160" height="58"/><text class="t" x="190" y="45">PrefMem</text><text class="s" x="190" y="64">意图与记忆</text></g>
+              <g class="node host"><rect x="176" y="116" width="160" height="58"/><text class="t" x="190" y="141">执行智能体</text><text class="s" x="190" y="160">规划并执行</text></g>
+              <g class="node agent"><rect x="176" y="212" width="160" height="58"/><text class="t" x="190" y="237">RoboBrain</text><text class="s" x="190" y="256">监控任务</text></g>
+              <g class="node data"><rect x="372" y="116" width="132" height="58"/><text class="t" x="386" y="141">机器人</text><text class="s" x="386" y="160">在场景中</text></g>
+              <g class="node decide"><rect x="372" y="212" width="132" height="58"/><text class="t" x="386" y="237">VLM 控制</text><text class="s" x="386" y="256">处理卡住的场景</text></g>
+            </svg>
+            <figcaption>规划中的架构</figcaption>
+          </figure>
+          <div>
+            <h3 id="astra-h">RoboAstra</h3>
+            <p class="meta"><span>2026 年 9 月至今</span><span>个人项目</span><span class="status-note">开发中</span></p>
+            <p>一个由自然语言指令驱动的端到端机器人控制系统。它将把 PrefMem 和 RoboBrain 的全部功能整合进同一个系统，并为执行智能体无法恢复的场景加入 VLM 驱动的控制。</p>
+            <ul class="facts">
+              <li><b>2 合 1</b><span>PrefMem 的交互与记忆，加上 RoboBrain 的监控</span></li>
+              <li><b>VLM</b><span>在执行智能体无法恢复时接管的控制</span></li>
+              <li><b>4 类应用</b><span>工业任务管理、自动数据采集、家用机器人和服务机器人</span></li>
+            </ul>
+            <ul class="links">
+              <li><a class="btn" href="prefmem/">PrefMem</a></li>
+              <li><a class="btn" href="robobrain/">RoboBrain</a></li>
+            </ul>
+          </div>
+        </article>
+
+        <h3 class="sub-title">早期项目</h3>
+        <ul class="rows">
+          <li><span class="when">2026 年 5 月</span><div><h4><a href="https://github.com/KasLoot/Intelligent_Planner">Intelligent Planner</a></h4><span class="role">小组项目，由我主导设计与开发</span><p>一个 VLM 驱动的旅行智能体：涵盖交通、餐厅和住宿预订、兴趣点、多日行程规划与预算管理。</p></div></li>
+          <li><span class="when">2025 年 10 月</span><div><h4><a href="https://github.com/KasLoot/Query_Distribution_System">Query Distribution System</a></h4><span class="role">小组项目，由我主导设计与开发</span><p>一个智能体系统，可将客户反馈转化为功能或修复需求，并分配负责人和优先级。</p></div></li>
+          <li><span class="when">2023</span><div><h4>海洋动物实时检测与跟踪</h4><span class="role">伯明翰大学本科毕业论文</span><p>一个基于 CNN 的检测与跟踪模型，可在动物被遮挡时持续跟踪，并用卡尔曼滤波稳定轨迹。数据集由我标注，包括被遮挡的样本。</p></div></li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id="publications" aria-labelledby="pubs-h">
+    <div class="wrap section-grid">
+      <h2 id="pubs-h">论文</h2>
+      <ol class="pubs">
+        <li>
+          <a class="title" href="https://doi.org/10.1016/j.aej.2025.03.103">Cancer diagnosis in smart healthcare: Optimisation of the MamCancerX model's multiple instance learning framework</a>
+          <span class="authors">Yuliang Gai, Ji Hao, <b>Yuxin Liu</b>, Minghao Li. <span class="venue">Alexandria Engineering Journal</span>, 2025.</span>
+          <p class="contrib">我参与整理病理图像数据，并参与验证 MamCancerX——一种用于全切片图像分类的多示例学习模型，在 CAMELYON16 和 BRACS 上进行了评估。</p>
+        </li>
+        <li>
+          <a class="title" href="https://link.springer.com/article/10.1007/s10723-023-09709-3">Markovian with Federated Deep Recurrent Neural Network for Edge—IoMT to Improve Healthcare in Smart Cities</a>
+          <span class="authors">Yuliang Gai, <b>Yuxin Liu</b>, Minghao Li, Shengcheng Yang. <span class="venue">Journal of Grid Computing</span> 22, 2024.</span>
+          <p class="contrib">我负责整理实验数据，并参与验证 MDP-FDRNN——一种在医疗边缘设备之间分配计算资源的联邦循环神经网络。</p>
+        </li>
+      </ol>
+    </div>
+  </section>
+
+  <section class="section" id="experience" aria-labelledby="exp-h">
+    <div class="wrap section-grid">
+      <h2 id="exp-h">经历</h2>
+      <div>
+        <ol class="timeline" aria-label="业界经历">
+          <li><span class="when">2024 年 10 月至 2025 年 4 月</span><div><h4>智元机器人（AgiBot）</h4><p class="role">产品经理实习生，Genie 部门</p><ul><li>设计并上线 Genie G1 人机交互界面（HMI）——一款用于采集机器人数据的端侧软件。</li><li>设计并上线 Genie Vision——机器人数据采集系统的 VR 软件。</li><li>支持 Genie Studio 的国际化产品设计。</li></ul></div></li>
+          <li><span class="when">2024 年 4 月至 8 月</span><div><h4>小米（Xiaomi Robotics）</h4><p class="role">算法工程师实习生</p><ul><li>研究并设计机器狗导航模型。</li><li>开发数据管线和训练框架。</li></ul></div></li>
+        </ol>
+        <p class="sub-h">教学</p>
+        <ol class="timeline" aria-label="教学">
+          <li><span class="when">2026 年 10 月至今</span><div><h4>伦敦大学学院（UCL）</h4><p class="role">助教，机器人与人工智能硕士及物联网硕士项目</p><p style="margin:0">我负责带领以下课程的实验课：机器人中的机器学习、运动规划与建模、估计与控制、嵌入式系统设计，以及场景理解与态势感知。</p></div></li>
+        </ol>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id="education" aria-labelledby="edu-h">
+    <div class="wrap section-grid">
+      <h2 id="edu-h">教育</h2>
+      <ol class="timeline">
+        <li><span class="when">2025 年 9 月至 2026 年 9 月</span><div><h4>伦敦大学学院（UCL）</h4><p class="role">机器人与人工智能硕士，计算机科学系</p><p style="margin:0">毕业论文：<a href="prefmem/">PrefMem</a>，一个以偏好和证据为门控的机器人操作智能体系统。导师：Dr Valerio Modugno，UCL 智能机器人组。</p></div></li>
+        <li><span class="when">2020 年 9 月至 2023 年 6 月</span><div><h4>伯明翰大学</h4><p class="role">计算机科学与人工智能学士</p><p style="margin:0">毕业论文：海洋动物实时目标检测与跟踪。导师：Dr Minqing Li。</p></div></li>
+      </ol>
+    </div>
+  </section>
+
+  <section class="section" id="skills" aria-labelledby="skills-h">
+    <div class="wrap section-grid">
+      <h2 id="skills-h">技能</h2>
+      <dl class="skills">
+        <dt>编程</dt><dd>Python, PyTorch, MuJoCo, LangChain, LangGraph</dd>
+        <dt>产品</dt><dd>撰写 PRD，使用 Axure、Figma 和 Sketch 制作原型</dd>
+        <dt>系统</dt><dd>Ubuntu、Windows、macOS</dd>
+        <dt>语言</dt><dd>英语、中文</dd>
+        <dt>其他</dt><dd>音乐制作、视频剪辑</dd>
+        <dt>奖项</dt><dd>FT International Engineering and Technology Challenge 2016 金奖（德国）</dd>
+      </dl>
+    </div>
+  </section>
+</main>
+
+<footer class="site-foot">
+  <div class="wrap">
+    <span>Yuxin Liu，伦敦。更新于 2026 年 11 月。</span>
+    <span><a href="mailto:slyx361@outlook.com">邮箱</a>&nbsp;&nbsp; <a href="https://github.com/KasLoot">GitHub</a>&nbsp;&nbsp; <a href="https://www.linkedin.com/in/yuxin-liu-a08b32296/">LinkedIn</a></span>
+  </div>
+</footer>
+<script src="../assets/js/site.js" defer></script>
+</body>
+</html>

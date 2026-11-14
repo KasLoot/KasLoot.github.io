@@ -83,6 +83,19 @@ h4 { font-size: 20px; font-weight: 600; }
 .site-head nav { display: flex; gap: 6px; flex-wrap: wrap; }
 .site-head nav a { color: var(--graphite); text-decoration: none; font-size: 15px; padding: 6px 10px; border-radius: 6px; }
 .site-head nav a:hover, .site-head nav a[aria-current="page"] { color: var(--ink); background: var(--wash); }
+.site-head nav a.lang { margin-left: 6px; border: 1px solid var(--rule); color: var(--ink); }
+
+/* Chinese pages: system CJK fonts behind the Latin faces, sans body text, no negative tracking */
+html:lang(zh) {
+  --serif: "Newsreader", "Noto Serif SC", "Source Han Serif SC", "Songti SC", "STSong", "SimSun", serif;
+  --sans: "Inter", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "Noto Sans SC", "Source Han Sans SC", sans-serif;
+}
+html:lang(zh) body { font-family: var(--sans); font-size: 17px; line-height: 1.85; }
+html:lang(zh) h1, html:lang(zh) h2, html:lang(zh) h3, html:lang(zh) h4 { letter-spacing: 0; font-weight: 600; }
+html:lang(zh) .hero h1, html:lang(zh) .page-head h1 { font-weight: 450; letter-spacing: -0.02em; }
+html:lang(zh) .hero .thesis, html:lang(zh) .page-head .deck { font-family: var(--serif); line-height: 1.5; }
+html:lang(zh) .lede, html:lang(zh) .fit-intro, html:lang(zh) .feature-caption { line-height: 1.7; }
+html:lang(zh) .venue { font-style: normal; }
 
 /* ---------- hero ---------- */
 .hero { padding-block: 64px 40px; }
