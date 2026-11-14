@@ -35,10 +35,10 @@
       <div>
         <h1 id="name">Yuxin Liu</h1>
         <p class="thesis">Robot policies that finish long tasks and keep improving while they work.</p>
-        <p class="bio">I'm a robotics and AI researcher in London. I completed the MSc in Robotics and Artificial Intelligence at UCL in 2026, where I now teach, and I'm continuing research on test-time adaptation for long-horizon manipulation. Before that I worked on robot products and algorithms at AgiBot and Xiaomi.</p>
+        <p class="bio">I'm a robotics and AI researcher in London. I completed the MSc in Robotics and Artificial Intelligence at UCL in 2026, where I now teach, and I'm now working on RoboTTA, a robot policy that improves at test time on long-horizon manipulation. Before that I worked on robot products and algorithms at AgiBot and Xiaomi.</p>
         <ul class="affiliations" aria-label="Affiliations">
           <li><a href="#education"><strong>UCL</strong><span>MSc Robotics and AI, teaching assistant</span></a></li>
-          <li><a href="#experience"><strong>AgiBot</strong><span>Product, Genie G1 robot</span></a></li>
+          <li><a href="#experience"><strong>AgiBot</strong><span>Genie G1 HMI and Genie Vision</span></a></li>
           <li><a href="#experience"><strong>Xiaomi</strong><span>Robot-dog navigation</span></a></li>
         </ul>
         <ul class="contact-links">
@@ -90,9 +90,9 @@
         <li>
           <h3><span class="step" aria-hidden="true">2</span>What's still missing</h3>
           <dl class="gaps">
-            <dt>Closed-loop execution</dt>
+            <dt>Closed loop</dt>
             <dd>A policy that never checks whether a step worked can't tell a finished task from a slipped grasp. Robots need to judge success, failure and progress from evidence, and decide when to ask, replan or stop.</dd>
-            <dt>Long-horizon tasks</dt>
+            <dt>Long horizon</dt>
             <dd>Small errors compound over long tasks, and current vision-language-action models tend to replay training trajectories instead of following a new instruction in a new scene.</dd>
             <dt>Self-improvement</dt>
             <dd>Policies mostly improve through more data and more pre-training. They don't yet learn from their own attempts while they are deployed.</dd>
@@ -102,10 +102,10 @@
           <h3><span class="step" aria-hidden="true">3</span>How my work fits together</h3>
           <p class="fit-intro">RoboBrain and PrefMem close the loop from outside the policy. RoboTTA, my current research, moves that loop inside the policy, so the robot itself improves while it works. RoboAstra is where they come together.</p>
           <ul class="fit">
-            <li><div class="who"><a href="robobrain/">RoboBrain</a><span>Built, 2026</span></div><p>Judges success, failure and progress from visual evidence, in real time.</p><ul class="chips" aria-label="Addresses"><li>Closed loop</li></ul></li>
+            <li><div class="who"><a href="robobrain/">RoboBrain</a><span>Working system</span></div><p>Judges success, failure and progress from visual evidence, in real time.</p><ul class="chips" aria-label="Addresses"><li>Closed loop</li></ul></li>
             <li><div class="who"><a href="prefmem/">PrefMem</a><span>MSc dissertation, 2026</span></div><p>Confirms what the user wants, plans one step at a time, checks each step and verifies completion before calling the task done.</p><ul class="chips" aria-label="Addresses"><li>Closed loop</li><li>Long horizon</li></ul></li>
             <li><div class="who"><a href="#robotta">RoboTTA</a><span>Ongoing research</span></div><p>A policy that remembers what it saw, what it tried and what happened, and updates that memory during execution.</p><ul class="chips" aria-label="Addresses"><li>Long horizon</li><li>Self-improvement</li></ul></li>
-            <li><div class="who"><a href="#roboastra">RoboAstra</a><span>In development</span></div><p>One system combining PrefMem and RoboBrain, with VLM-driven control for scenes the robot can't recover from.</p><ul class="chips" aria-label="Addresses"><li>Closed loop</li><li>Long horizon</li></ul></li>
+            <li><div class="who"><a href="#roboastra">RoboAstra</a><span>In development</span></div><p>One system combining PrefMem and RoboBrain, with VLM-driven control for scenes the execution agent can't recover from.</p><ul class="chips" aria-label="Addresses"><li>Closed loop</li><li>Long horizon</li></ul></li>
           </ul>
         </li>
       </ol>
@@ -124,7 +124,7 @@
           <div>
             <h3 id="rb-h"><a href="robobrain/" style="color:inherit;text-decoration:none">RoboBrain</a></h3>
             <p class="meta"><span>Jun 2026 – present</span><span>Individual project</span></p>
-            <p>A real-time, closed-loop monitor for robot tasks. Separate success and failure specialists each ask a vision-language model one narrow question about the current frame, and a positive answer must survive a short verification round before the status changes. A Task Builder turns a plain-language description and a scene photo into the whole monitoring setup.</p>
+            <p>A real-time, closed-loop monitor for robot tasks. Separate success and failure specialists each ask a vision-language model one narrow question about the current frame, and a positive answer must survive a short verification round before the status changes. A Task Builder drafts the whole monitoring setup from a plain-language description and a scene photo.</p>
             <ul class="facts">
               <li><b>197/198</b><span>correct episode outcomes across three plug-insertion datasets</span></li>
               <li><b>10–15 Hz</b><span>live monitoring with Gemma 4 26B A4B on one RTX Pro 6000</span></li>
@@ -204,9 +204,6 @@
               <li><b>Memory</b><span>of observations, attempted actions and their outcomes, updated during execution</span></li>
               <li><b>Test time</b><span>the policy improves while it runs, instead of waiting for the next round of training</span></li>
               <li><b>4</b><span>memory architectures under comparison: test-time training layers, liquid neural networks, Mamba and recurrent networks</span></li>
-            </ul>
-            <ul class="links">
-              <li><a class="btn" href="https://github.com/KasLoot/RoboTTA">Code</a></li>
             </ul>
           </div>
         </article>

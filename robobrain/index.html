@@ -4,9 +4,9 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>RoboBrain — Yuxin Liu</title>
-<meta name="description" content="RoboBrain: a real-time, closed-loop monitor for robot tasks. Generate your own monitor from a description and replay it on a recorded run.">
+<meta name="description" content="RoboBrain: a real-time, closed-loop monitor for robot tasks. Generate your own monitor from a description and replay it on a live run recording.">
 <meta property="og:title" content="RoboBrain — real-time monitoring for robot tasks">
-<meta property="og:description" content="Specialist VLM checks, verification rounds and progress tracking. Try it on a recorded run.">
+<meta property="og:description" content="Specialist VLM checks, verification rounds and progress tracking. Try it on a live run recording.">
 <meta property="og:image" content="https://kasloot.github.io/assets/img/og.jpg">
 <link rel="icon" href="../assets/img/favicon.svg" type="image/svg+xml">
 <link rel="stylesheet" href="../assets/css/site.css">
@@ -33,7 +33,7 @@
     <h1>RoboBrain</h1>
     <p class="deck">A closed-loop monitor that watches a robot work and reports, in real time, whether the task is on track, finished or failing, and why.</p>
     <ul class="links">
-      <li><a class="btn primary" href="#try">Try it on a recorded run</a></li>
+      <li><a class="btn primary" href="#try">Try it on a live run recording</a></li>
       <li><a class="btn" href="https://github.com/KasLoot/RoboBrain">Code on GitHub</a></li>
     </ul>
     <div class="stat-row">
@@ -44,16 +44,16 @@
   </header>
 
   <section class="block" aria-labelledby="runs-h">
-    <h2 id="runs-h">Two recorded runs</h2>
+    <h2 id="runs-h">Two live run recordings</h2>
     <p class="intro">Both overlays are RoboBrain's own output during the run. In continuous monitoring the status re-arms: when a failure is cleared and the task restarts, it returns to ON_GOING.</p>
     <div class="videos">
       <figure>
         <video src="../assets/video/plug.mp4" poster="../assets/video/plug-poster.jpg" controls muted playsinline preload="metadata"></video>
-        <figcaption><b>Plug insertion, about 4× speed</b>A robot arm inserts a USB adapter three times. The second attempt fails: the adapter rotates in the gripper, and RoboBrain flags ROTATED_OR_MISALIGNED with the visible evidence.</figcaption>
+        <figcaption><b>Plug insertion, about 4× speed</b>A robot arm makes three attempts to insert a USB plug. On the second, the plug rotates in the gripper, and RoboBrain flags ROTATED_OR_MISALIGNED with the visible evidence.</figcaption>
       </figure>
       <figure>
         <video src="../assets/video/sort.mp4" poster="../assets/video/sort-poster.jpg" controls muted playsinline preload="metadata"></video>
-        <figcaption><b>Sorting bricks and cables, real time</b>Bricks belong in the box and cables on the mat. Progress counts sorted groups, and a misplaced object raises WRONG_POSITIONING.</figcaption>
+        <figcaption><b>Sorting bricks and cables, real time</b>A person sorts bricks into the box and cables onto the mat. Progress counts sorted groups, and a misplaced object raises WRONG_POSITIONING.</figcaption>
       </figure>
     </div>
     <dl class="overlay-key">
@@ -126,7 +126,7 @@
 
   <section class="block" id="try" aria-labelledby="try-h">
     <h2 id="try-h">Try it</h2>
-    <p class="intro">Describe a monitoring task for one of the recorded clips. RoboBrain's own Task Builder prompt writes the specialists, and the replay then plays the clip while your monitor judges it, keyframe by keyframe. You can compare the result with the original run afterwards.</p>
+    <p class="intro">Describe a monitoring task for one of the live run recordings. RoboBrain's own Task Builder prompt writes the specialists, and the replay then plays the clip while your monitor judges it, keyframe by keyframe. You can compare the result with the original run afterwards.</p>
 
     <div class="console" id="trynow">
       <div class="c-head"><span class="mark" aria-hidden="true">R</span><strong>RoboBrain</strong><span class="badge">Task Builder on&nbsp;<span id="tn-model">gpt-6.1-terra</span></span></div>
@@ -135,8 +135,8 @@
           <div class="c-card-head"><h3>Describe the task</h3></div>
           <fieldset class="clip-pick">
             <legend>Replay clip</legend>
-            <label><input type="radio" name="tn-clip" value="sort" checked><img src="../assets/replay/sort/k01.jpg" alt="">Sort bricks and cables<small>54 s, 12 keyframes</small></label>
-            <label><input type="radio" name="tn-clip" value="plug"><img src="../assets/replay/plug/k01.jpg" alt="">Plug insertion<small>20 s at 4×, 10 keyframes</small></label>
+            <label><input type="radio" name="tn-clip" value="plug" checked><img src="../assets/replay/plug/k01.jpg" alt="">Plug insertion<small>20 s at 4×, 10 keyframes</small></label>
+            <label><input type="radio" name="tn-clip" value="sort"><img src="../assets/replay/sort/k01.jpg" alt="">Sort bricks and cables<small>54 s, 12 keyframes</small></label>
           </fieldset>
           <label>Your description
             <textarea id="tn-task" maxlength="1500" rows="7"></textarea></label>
@@ -192,7 +192,7 @@
           </details>
         </div>
       </div>
-      <noscript><p>The demo needs JavaScript. The recorded runs above show RoboBrain's own output.</p></noscript>
+      <noscript><p>The demo needs JavaScript. The live run recordings above show RoboBrain's own output.</p></noscript>
     </div>
   </section>
 </main>

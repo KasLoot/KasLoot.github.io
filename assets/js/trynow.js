@@ -18,7 +18,7 @@ const el = (tag, attrs = {}, ...kids) => {
   return n;
 };
 
-const S = { clip: "sort", mode: "own", demoReady: false, edited: false, draft: null, draftClip: null, ticket: null, run: 0, tsWidget: null };
+const S = { clip: "plug", mode: "own", demoReady: false, edited: false, draft: null, draftClip: null, ticket: null, run: 0, tsWidget: null };
 
 // ---------- setup ----------
 function init() {
