@@ -74,7 +74,7 @@
       <div class="prose">
         <p class="lede">Today's robot policies try to generalise by pre-training on massive offline datasets, and mostly leave learning in the physical world aside. I think test-time adaptation is the missing piece.</p>
         <p>A policy that keeps adapting while it acts should handle long-horizon tasks more reliably, transfer across environments, and even pick up new skills, without another round of large-scale data collection and pre-training.</p>
-        <p>My current question is whether a robot completes long-horizon manipulation more reliably when it remembers what it observed, which actions it tried, and what happened as a result. My recent systems work approaches the same problem from outside the policy: agentic layers that watch a robot, judge progress from visual evidence, and decide when to ask, replan or stop.</p>
+        <p>This is the idea behind <a href="#robotta">RoboTTA</a>, my current research: can a robot complete long-horizon manipulation more reliably if it remembers what it observed, which actions it tried and what happened as a result, and keeps updating that memory while it works? My two recent systems approach the same problem from outside the policy. <a href="robobrain/">RoboBrain</a> watches a robot in real time and judges success, failure and progress from visual evidence. <a href="prefmem/">PrefMem</a> turns ambiguous instructions into confirmed goals, then decides from visual evidence when to ask, replan or stop.</p>
       </div>
     </div>
   </section>
@@ -103,7 +103,25 @@
         </article>
 
         <article class="plate" aria-labelledby="pm-h">
-          <a class="media figure-box" href="prefmem/"><img src="assets/img/prefmem-architecture.svg" width="760" height="500" alt="PrefMem architecture: user, HRI agent, memory agent and preference store, deterministic runtime and controller, planner, monitor and validator services, execution adapter, and the physical or MuJoCo scene"></a>
+          <figure class="media figure-box" style="margin:0">
+            <svg class="mini" viewBox="0 0 520 290" role="img" aria-labelledby="pm-fig">
+              <title id="pm-fig">PrefMem architecture, simplified: you talk only to the HRI Agent, which uses the Memory Agent for your preferences; a deterministic core owns the goal and state, calls the planner, monitor and validator, and sends one task at a time to a human or MuJoCo executor.</title>
+              <defs><marker id="mp" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path class="arrowhead" d="M0,0 L10,5 L0,10 z"/></marker></defs>
+              <path class="edge" d="M128,145 H153" marker-start="url(#mp)" marker-end="url(#mp)"/>
+              <path class="edge" d="M231,176 V209" marker-start="url(#mp)" marker-end="url(#mp)"/>
+              <path class="edge" d="M308,145 H333" marker-start="url(#mp)" marker-end="url(#mp)"/>
+              <path class="edge" d="M420,82 V103" marker-start="url(#mp)" marker-end="url(#mp)"/>
+              <path class="edge" d="M420,186 V209" marker-end="url(#mp)"/>
+              <text class="note" x="428" y="202">one task</text>
+              <g class="node human"><rect x="16" y="116" width="110" height="58"/><text class="t" x="30" y="141">You</text><text class="s" x="30" y="160">ask, confirm</text></g>
+              <g class="node agent"><rect x="156" y="116" width="150" height="58"/><text class="t" x="170" y="141">HRI Agent</text><text class="s" x="170" y="160">clarifies intent</text></g>
+              <g class="node agent"><rect x="156" y="212" width="150" height="58"/><text class="t" x="170" y="237">Memory Agent</text><text class="s" x="170" y="256">your preferences</text></g>
+              <g class="node agent"><rect x="336" y="18" width="168" height="62"/><text class="t" x="350" y="44">Plan, monitor,</text><text class="t" x="350" y="64">validate</text></g>
+              <g class="node host"><rect x="336" y="106" width="168" height="78"/><text class="t" x="350" y="132">Deterministic core</text><text class="s" x="350" y="151">owns goal and state</text><text class="s" x="350" y="168">receding horizon</text></g>
+              <g class="node data"><rect x="336" y="212" width="168" height="58"/><text class="t" x="350" y="237">Executor</text><text class="s" x="350" y="256">human or MuJoCo</text></g>
+            </svg>
+            <figcaption>Architecture, simplified from the thesis</figcaption>
+          </figure>
           <div>
             <h3 id="pm-h"><a href="prefmem/" style="color:inherit;text-decoration:none">PrefMem</a></h3>
             <p class="meta"><span>Apr – Sep 2026</span><span>MSc dissertation, UCL</span><span>Supervisor: Dr Valerio Modugno</span></p>
@@ -120,20 +138,84 @@
           </div>
         </article>
 
-        <div class="pair" style="margin-bottom:44px">
+        <article class="plate" id="robotta" aria-labelledby="tta-h">
+          <figure class="media figure-box" style="margin:0">
+            <svg class="mini" viewBox="0 0 520 290" role="img" aria-labelledby="tta-fig">
+              <title id="tta-fig">RoboTTA research question: a policy acts on the current view and a memory state, and the memory is updated during execution with what the robot observed, which action it tried and what happened.</title>
+              <defs><marker id="mt" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path class="arrowhead" d="M0,0 L10,5 L0,10 z"/></marker></defs>
+              <path class="edge" d="M164,59 H183" marker-end="url(#mt)"/>
+              <path class="edge" d="M334,59 H353" marker-end="url(#mt)"/>
+              <path class="edge" d="M90,30 V14 H430 V27" marker-end="url(#mt)"/>
+              <path class="edge" d="M430,88 V147" marker-end="url(#mt)"/>
+              <path class="edge" d="M356,179 H337" marker-end="url(#mt)"/>
+              <path class="edge" d="M260,150 V91" marker-end="url(#mt)"/>
+              <text class="note" x="270" y="124">updated while it works</text>
+              <g class="node data"><rect x="16" y="30" width="148" height="58"/><text class="t" x="30" y="55">Observe</text><text class="s" x="30" y="74">what the robot sees</text></g>
+              <g class="node host"><rect x="186" y="30" width="148" height="58"/><text class="t" x="200" y="55">Memory state</text><text class="s" x="200" y="74">kept at test time</text></g>
+              <g class="node agent"><rect x="356" y="30" width="148" height="58"/><text class="t" x="370" y="55">Policy</text><text class="s" x="370" y="74">view + memory</text></g>
+              <g class="node decide"><rect x="356" y="150" width="148" height="58"/><text class="t" x="370" y="175">Action</text><text class="s" x="370" y="194">what it tried</text></g>
+              <g class="node data"><rect x="186" y="150" width="148" height="58"/><text class="t" x="200" y="175">Outcome</text><text class="s" x="200" y="194">what happened</text></g>
+              <rect class="group" x="16" y="232" width="488" height="44" rx="10"/>
+              <text class="note" x="32" y="259">Memory candidates: TTT layers, liquid networks, Mamba, RNNs</text>
+            </svg>
+            <figcaption>The research question, illustrated</figcaption>
+          </figure>
           <div>
-            <h3>RoboTTA</h3>
-            <p class="meta"><span>Oct 2026 – present</span><span class="status-note">Ongoing research</span></p>
-            <p>Can a robot complete long-horizon manipulation more reliably by remembering what it observed, which actions it tried and what happened? I'm studying how a policy can keep and update that memory during execution, comparing test-time training layers, liquid neural networks, Mamba and recurrent networks.</p>
+            <h3 id="tta-h">RoboTTA</h3>
+            <p class="meta"><span>Oct 2026 – present</span><span>Robotic Test-time Advancement Policy</span><span class="status-note">Ongoing research</span></p>
+            <p>Can a robot complete long-horizon manipulation more reliably by remembering what it observed, which actions it tried and what happened as a result? I'm studying how a policy can keep and update that memory during execution, instead of relying only on what it learned in pre-training.</p>
+            <ul class="facts">
+              <li><b>Memory</b><span>of observations, attempted actions and their outcomes, updated while the robot works</span></li>
+              <li><b>4</b><span>candidate architectures: test-time training layers, liquid neural networks, Mamba and recurrent networks</span></li>
+              <li><b>Long tasks</b><span>long-horizon manipulation, where remembering earlier attempts should matter most</span></li>
+            </ul>
+            <ul class="links">
+              <li><a class="btn primary" href="mailto:slyx361@outlook.com?subject=RoboTTA">Talk to me about RoboTTA</a></li>
+            </ul>
           </div>
-          <div>
-            <h3>RoboAstra</h3>
-            <p class="meta"><span>Sep 2026 – present</span><span class="status-note">In development</span></p>
-            <p>An end-to-end robot control system driven by natural-language instructions. It brings PrefMem's interaction and memory together with RoboBrain's monitoring, and adds VLM-driven control for scenes the execution agent can't recover from.</p>
-          </div>
-        </div>
+        </article>
 
-        <h3 style="font-size:22px;margin-bottom:12px">Earlier projects</h3>
+        <article class="plate" id="roboastra" aria-labelledby="astra-h">
+          <figure class="media figure-box" style="margin:0">
+            <svg class="mini" viewBox="0 0 520 290" role="img" aria-labelledby="astra-fig">
+              <title id="astra-fig">RoboAstra plan: a plain-language instruction goes to PrefMem and an execution agent that acts on the robot; RoboBrain monitors the task, and VLM-driven control takes over in scenes the execution agent cannot recover from.</title>
+              <defs><marker id="ma" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path class="arrowhead" d="M0,0 L10,5 L0,10 z"/></marker></defs>
+              <path class="edge" d="M140,132 H156 V49 H173" marker-end="url(#ma)"/>
+              <path class="edge" d="M140,147 H173" marker-end="url(#ma)"/>
+              <path class="edge" d="M256,78 V113" marker-end="url(#ma)"/>
+              <path class="edge" d="M336,145 H369" marker-end="url(#ma)"/>
+              <path class="edge dash" d="M388,174 V194 H300 V209" marker-end="url(#ma)"/>
+              <text class="note" x="400" y="198">observes</text>
+              <path class="edge" d="M226,212 V177" marker-end="url(#ma)"/>
+              <text class="note" x="160" y="198">status</text>
+              <path class="edge" d="M336,241 H369" marker-end="url(#ma)"/>
+              <path class="edge" d="M470,212 V177" marker-end="url(#ma)"/>
+              <g class="node human"><rect x="16" y="112" width="124" height="66"/><text class="t" x="30" y="140">Instruction</text><text class="s" x="30" y="159">plain language</text></g>
+              <g class="node agent"><rect x="176" y="20" width="160" height="58"/><text class="t" x="190" y="45">PrefMem</text><text class="s" x="190" y="64">intent and memory</text></g>
+              <g class="node host"><rect x="176" y="116" width="160" height="58"/><text class="t" x="190" y="141">Execution agent</text><text class="s" x="190" y="160">plans and acts</text></g>
+              <g class="node agent"><rect x="176" y="212" width="160" height="58"/><text class="t" x="190" y="237">RoboBrain</text><text class="s" x="190" y="256">monitors the task</text></g>
+              <g class="node data"><rect x="372" y="116" width="132" height="58"/><text class="t" x="386" y="141">Robot</text><text class="s" x="386" y="160">in the scene</text></g>
+              <g class="node decide"><rect x="372" y="212" width="132" height="58"/><text class="t" x="386" y="237">VLM control</text><text class="s" x="386" y="256">for stuck scenes</text></g>
+            </svg>
+            <figcaption>Planned architecture</figcaption>
+          </figure>
+          <div>
+            <h3 id="astra-h">RoboAstra</h3>
+            <p class="meta"><span>Sep 2026 – present</span><span>Individual project</span><span class="status-note">In development</span></p>
+            <p>An end-to-end robot control system driven by natural-language instructions. It will bring every feature of PrefMem and RoboBrain into one system, and adds VLM-driven control for scenes the execution agent can't recover from.</p>
+            <ul class="facts">
+              <li><b>2 in 1</b><span>PrefMem's interaction and memory with RoboBrain's monitoring</span></li>
+              <li><b>VLM</b><span>control that takes over when the execution agent can't recover</span></li>
+              <li><b>4 uses</b><span>industrial task management, automatic data collection, household robots and service robots</span></li>
+            </ul>
+            <ul class="links">
+              <li><a class="btn" href="prefmem/">PrefMem</a></li>
+              <li><a class="btn" href="robobrain/">RoboBrain</a></li>
+            </ul>
+          </div>
+        </article>
+
+        <h3 class="sub-title">Earlier projects</h3>
         <ul class="rows">
           <li><span class="when">May 2026</span><div><h4><a href="https://github.com/KasLoot/Intelligent_Planner">Intelligent Planner</a></h4><span class="role">Group project, I led design and development</span><p>A VLM-driven agent for travel: transport, restaurant and accommodation booking, points of interest, multi-day plans and budget tracking.</p></div></li>
           <li><span class="when">Oct 2025</span><div><h4><a href="https://github.com/KasLoot/Query_Distribution_System">Query Distribution System</a></h4><span class="role">Group project, I led design and development</span><p>An agentic system that turns customer feedback into feature or fix requests, then assigns an owner and a priority.</p></div></li>
