@@ -61,15 +61,15 @@
         <div class="bar">
           <span class="mark" aria-hidden="true">R</span><span class="bar-title">Recorded run</span>
           <span class="clip-tabs" role="group" aria-label="Choose a recorded run">
-            <button type="button" data-clip="sort" aria-pressed="true" data-src="assets/video/sort.mp4" data-poster="assets/video/sort-poster.jpg" data-label="RoboBrain monitoring a person sorting bricks into a box and cables onto a mat, with a live status overlay">Sorting</button>
-            <button type="button" data-clip="plug" aria-pressed="false" data-src="assets/video/plug.mp4" data-poster="assets/video/plug-poster.jpg" data-label="RoboBrain monitoring a robot arm inserting a USB plug, flagging a rotated-plug failure">Plug insertion</button>
+            <button type="button" data-clip="plug" aria-pressed="true" data-src="assets/video/plug.mp4" data-poster="assets/video/plug-poster.jpg" data-label="RoboBrain monitoring a robot arm inserting a USB plug, flagging a rotated-plug failure">Plug insertion</button>
+            <button type="button" data-clip="sort" aria-pressed="false" data-src="assets/video/sort.mp4" data-poster="assets/video/sort-poster.jpg" data-label="RoboBrain monitoring a person sorting bricks into a box and cables onto a mat, with a live status overlay">Sorting</button>
           </span>
         </div>
-        <video src="assets/video/sort.mp4" poster="assets/video/sort-poster.jpg" autoplay muted playsinline preload="metadata" aria-label="RoboBrain monitoring a person sorting bricks into a box and cables onto a mat, with a live status overlay"></video>
+        <video src="assets/video/plug.mp4" poster="assets/video/plug-poster.jpg" autoplay muted playsinline preload="metadata" aria-label="RoboBrain monitoring a robot arm inserting a USB plug, flagging a rotated-plug failure"></video>
       </div>
       <div class="feature-text">
-        <p class="feature-caption" data-caption="sort">Watching a person sort bricks into a box and cables onto a mat. A vision-language model checks each fresh camera frame, and the overlay reports whether the task is on track, finished or failing, and how many groups are sorted.</p>
-        <p class="feature-caption" data-caption="plug" hidden>Watching a robot arm insert a USB plug, at about 4× speed. On the second attempt the plug rotates in the gripper; RoboBrain flags the failure with the visible evidence, then re-arms when the task restarts.</p>
+        <p class="feature-caption" data-caption="plug">Watching a robot arm insert a USB plug, at about 4× speed. On the second attempt the plug rotates in the gripper; RoboBrain flags the failure with the visible evidence, then re-arms when the task restarts.</p>
+        <p class="feature-caption" data-caption="sort" hidden>Watching a person sort bricks into a box and cables onto a mat. A vision-language model checks each fresh camera frame, and the overlay reports whether the task is on track, finished or failing, and how many groups are sorted.</p>
         <p class="muted">It runs live at 10–15 Hz on a single GPU. You can generate your own monitor for either clip and replay it.</p>
         <ul class="links">
           <li><a class="btn primary" href="robobrain/#try">Try it on these clips</a></li>
@@ -177,7 +177,7 @@
         <article class="plate" id="robotta" aria-labelledby="tta-h">
           <figure class="media figure-box" style="margin:0">
             <svg class="mini" viewBox="0 0 520 290" role="img" aria-labelledby="tta-fig">
-              <title id="tta-fig">RoboTTA research question: a policy acts on the current view and a memory state, and the memory is updated during execution with what the robot observed, which action it tried and what happened.</title>
+              <title id="tta-fig">RoboTTA design: the policy acts on the current view and an execution memory, and the memory is updated during execution with what the robot observed, which action it tried and what happened.</title>
               <defs><marker id="mt" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path class="arrowhead" d="M0,0 L10,5 L0,10 z"/></marker></defs>
               <path class="edge" d="M164,59 H183" marker-end="url(#mt)"/>
               <path class="edge" d="M334,59 H353" marker-end="url(#mt)"/>
@@ -194,19 +194,19 @@
               <rect class="group" x="16" y="232" width="488" height="44" rx="10"/>
               <text class="note" x="32" y="259">Memory candidates: TTT layers, liquid networks, Mamba, RNNs</text>
             </svg>
-            <figcaption>The research question, illustrated</figcaption>
+            <figcaption>How the policy is designed</figcaption>
           </figure>
           <div>
             <h3 id="tta-h">RoboTTA</h3>
             <p class="meta"><span>Oct 2026 – present</span><span>Robotic Test-time Advancement Policy</span><span class="status-note">Ongoing research</span></p>
-            <p>Can a robot complete long-horizon manipulation more reliably by remembering what it observed, which actions it tried and what happened as a result? I'm studying how a policy can keep and update that memory during execution, instead of relying only on what it learned in pre-training.</p>
+            <p>A robot policy that improves while it works. RoboTTA keeps an execution memory of what the robot observed, which actions it tried and what happened as a result, and updates that memory at test time. Each step is chosen with the earlier attempts in view, which keeps long-horizon tasks on track as small errors build up, and lets the policy get better during deployment without massive new data collection or pre-training.</p>
             <ul class="facts">
-              <li><b>Memory</b><span>of observations, attempted actions and their outcomes, updated while the robot works</span></li>
-              <li><b>4</b><span>candidate architectures: test-time training layers, liquid neural networks, Mamba and recurrent networks</span></li>
-              <li><b>Long tasks</b><span>long-horizon manipulation, where remembering earlier attempts should matter most</span></li>
+              <li><b>Memory</b><span>of observations, attempted actions and their outcomes, updated during execution</span></li>
+              <li><b>Test time</b><span>the policy improves while it runs, instead of waiting for the next round of training</span></li>
+              <li><b>4</b><span>memory architectures under comparison: test-time training layers, liquid neural networks, Mamba and recurrent networks</span></li>
             </ul>
             <ul class="links">
-              <li><a class="btn primary" href="mailto:slyx361@outlook.com?subject=RoboTTA">Talk to me about RoboTTA</a></li>
+              <li><a class="btn" href="https://github.com/KasLoot/RoboTTA">Code</a></li>
             </ul>
           </div>
         </article>
@@ -284,8 +284,8 @@
       <h2 id="exp-h">Experience</h2>
       <div>
         <ol class="timeline" aria-label="Industry experience">
-          <li><span class="when">Oct 2024 – Apr 2025</span><div><h4>AgiBot</h4><p class="role">Product manager intern, Genie department</p><ul><li>Led product design for the Genie G1 robot's human–machine interface and its VR data-collection software.</li><li>Supported international product design for Genie Studio.</li></ul></div></li>
-          <li><span class="when">Apr – Aug 2024</span><div><h4>Xiaomi Robotics</h4><p class="role">Algorithm engineer intern</p><ul><li>Researched and designed navigation models for robot dogs.</li><li>Built a data pipeline and a training framework.</li></ul></div></li>
+          <li><span class="when">Oct 2024 – Apr 2025</span><div><h4>AgiBot</h4><p class="role">Product manager intern, Genie department</p><ul><li>Designed and shipped the Genie G1 human–machine interface (HMI), the edge-device software for collecting robot data.</li><li>Designed and shipped Genie Vision, the VR software for the robot data-collection system.</li><li>Supported international product design for Genie Studio.</li></ul></div></li>
+          <li><span class="when">Apr – Aug 2024</span><div><h4>Xiaomi Robotics</h4><p class="role">Algorithm engineer intern</p><ul><li>Researched and designed navigation models for robot dogs.</li><li>Developed a data pipeline and a training framework.</li></ul></div></li>
         </ol>
         <p class="sub-h">Teaching</p>
         <ol class="timeline" aria-label="Teaching">
